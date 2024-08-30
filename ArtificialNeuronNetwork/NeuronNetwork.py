@@ -3,8 +3,8 @@ Created on 21 août 2024
 
 @author: SSM9
 '''
-from NeuronLayer import NeuronLayer
-from Neuron import Neuron
+from ArtificialNeuronNetwork.NeuronLayer import NeuronLayer
+from ArtificialNeuronNetwork.Neuron import Neuron
 import numpy as np
 
 class NeuronNetwork(object):

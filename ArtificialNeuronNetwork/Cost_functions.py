@@ -5,7 +5,7 @@ Created on 21 août 2024
 '''
 import numpy as np
 
-import Parameters
+from ArtificialNeuronNetwork import Parameters
 
 '''
 

@@ -3,10 +3,10 @@ Created on 21 août 2024
 
 @author: SSM9
 '''
-from NeuronNetwork import NeuronNetwork
+from ArtificialNeuronNetwork.NeuronNetwork import NeuronNetwork
 
-import Cost_functions
-import Activation_functions
+from ArtificialNeuronNetwork import Cost_functions
+from ArtificialNeuronNetwork import Activation_functions
 
 if __name__ == '__main__':
     

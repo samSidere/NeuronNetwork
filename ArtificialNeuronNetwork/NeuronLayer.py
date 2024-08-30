@@ -5,7 +5,7 @@ Created on 20 août 2024
 '''
 
 
-from Neuron import Neuron
+from ArtificialNeuronNetwork.Neuron import Neuron
 import numpy as np
 
 class NeuronLayer(object):

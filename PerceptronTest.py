@@ -3,9 +3,9 @@ Created on 16 août 2024
 
 @author: SSM9
 '''
-from Neuron import Neuron
+from ArtificialNeuronNetwork.Neuron import Neuron
 import numpy as np
-import Activation_functions
+from ArtificialNeuronNetwork import Activation_functions
 
 if __name__ == '__main__':
     
