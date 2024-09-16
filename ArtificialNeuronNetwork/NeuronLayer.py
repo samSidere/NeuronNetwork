@@ -94,18 +94,22 @@ class NeuronLayer(object):
             self.neurons[i].updateParametersFromNextLayer(next_layer_errors, correction_coeff, next_layer_previous_weights_associated_to_each_current_layer_neuron[i])
         return 
       
-    def backPropagationThroughOuptputLayer(self, errors, correction_coeff):
+    def backPropagationThroughOuptputLayer(self, errors, correction_coeff, outputIndex = None):
         
         if(self.isInputLayer):
             return
         
-        #Do back propagation for current Layer
-        for i in range (0,self.layerSize,1):
-            #TODO build weights table for "previous" layer before their update
-            #update weights and store errors into each neuron of the layer
-            self.neurons[i].updateParametersFromOutputError( errors[i], correction_coeff)
-        return 
-        
+        if(outputIndex == None):
+            #Do back propagation for current Layer
+            for i in range (0,self.layerSize,1):
+                #TODO build weights table for "previous" layer before their update
+                #update weights and store errors into each neuron of the layer
+                self.neurons[i].updateParametersFromOutputError( errors[i], correction_coeff)
+                return 
+        else :
+            self.neurons[outputIndex].updateParametersFromOutputError( errors, correction_coeff)
+            return 
+            
     def printLayerOutput(self):
         
         for neuron in self.neurons:

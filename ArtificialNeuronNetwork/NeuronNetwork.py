@@ -108,6 +108,23 @@ class NeuronNetwork(object):
             self.output_layer.connectLayerToPreviousLayer(self.hidden_layers[self.network_depth-1])
             self.output_layer.feedForwardPropagationThroughLayer()
         return
+    
+    '''
+    Renvoie la sortie du réseau dans un tenseur
+    '''
+    def getNetworkOutput(self):
+        
+        if self.number_of_outputs > 1 :
+            output_data = []
+        
+            for neuron in self.output_layer.neurons:
+                output_data.append(neuron.output_value)
+                
+        else :
+            output_data = self.output_layer.neurons[0].output_value
+            
+        return output_data
+    
       
     '''
     Calcule les performance du réseau
@@ -122,7 +139,7 @@ class NeuronNetwork(object):
         return cost_function_results
    
     '''
-    Entraine le modèle TODO : refactor all this capability and infrastructure
+    Entraine le modèle
     '''
     def supervisedModelTrainingEpochExecution(self, input_data_set, expected_results):
         
@@ -202,10 +219,10 @@ class NeuronNetwork(object):
     '''
     Met à jour jour les paramètres du réseau en propageant les erreurs vers la couche d'entrée
     '''    
-    def updateModelParameters(self, errors):
+    def updateModelParameters(self, errors, outputIndex = None):
         
         #Connect errors to ouput Layer
-        self.output_layer.backPropagationThroughOuptputLayer(errors, self.correction_coeff)
+        self.output_layer.backPropagationThroughOuptputLayer(errors, self.correction_coeff, outputIndex)
                 
         #print("tbd")
         

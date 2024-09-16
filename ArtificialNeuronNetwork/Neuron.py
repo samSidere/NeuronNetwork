@@ -59,9 +59,11 @@ class Neuron(object):
                   ') is not compatible with the number of neuron dendrites ('+str(len(self.synaptic_weights))+')')
         else:
             combination_function_result = self.bias;
+            '''
             for v,w in zip(self.input_values,self.synaptic_weights):
                 combination_function_result = combination_function_result+np.multiply(v,w)
-            
+            '''
+            combination_function_result+=np.dot(self.input_values,self.synaptic_weights)
             self.output_value = self.activation_function(combination_function_result)
             
     
@@ -84,9 +86,7 @@ class Neuron(object):
     def computeErrorFromNextLayer(self, next_layer_weights_associated_to_self,next_layer_errors):
         self.error = np.float64(0)
         
-        for i in range (0, len(next_layer_errors),1):
-
-            self.error = self.error+np.multiply(next_layer_weights_associated_to_self[i],next_layer_errors[i])
+        self.error = np.dot(next_layer_weights_associated_to_self,next_layer_errors)
         
         return 
         
@@ -101,7 +101,7 @@ class Neuron(object):
         #refresh each weight of the neuron using the gradient method
         for i in range (0, len(self.synaptic_weights),1):
             
-            grad_err_weight_i = self.error*(-self.der_activation_function(np.sum(np.dot(self.synaptic_weights,self.input_values), dtype=np.float64)+self.bias))*self.input_values[i]
+            grad_err_weight_i = self.error*(-self.der_activation_function(np.dot(self.synaptic_weights,self.input_values)+self.bias))*self.input_values[i]
             
             self.synaptic_weights[i]=self.synaptic_weights[i]+(-correction_coeff*grad_err_weight_i)
         
@@ -122,7 +122,7 @@ class Neuron(object):
         #refresh each weight of the neuron using the gradient method
         for i in range (0, len(self.synaptic_weights),1):
                         
-            grad_err_weight_i = self.error*(-self.der_activation_function(np.sum(np.dot(self.synaptic_weights,self.input_values), dtype=np.float64)+self.bias))*self.input_values[i]
+            grad_err_weight_i = self.error*(-self.der_activation_function(np.dot(self.synaptic_weights,self.input_values)+self.bias))*self.input_values[i]
             
             self.synaptic_weights[i]=self.synaptic_weights[i]+(-correction_coeff*grad_err_weight_i)
         
