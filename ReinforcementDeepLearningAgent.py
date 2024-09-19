@@ -117,11 +117,9 @@ class ReinforcementDeepLearningAgent(object):
         #Compute TD Target -> R+Gamma*Qs'a'
         TDTarget = reward + self.gammaDiscount*argmaxQst1_at1
                 
-        #Compute Error -> TDTarget - Qsa
+        #Compute Error -> TDTarget - Qsa  (The point of this learning is to minimize the Q(s,a) variation over time in order to reach the true Q(s,a) value)
                 
         #Compute QNetwork Error gradient for the parameter update algorithm /Normalement l'algorithme de back propagation prend le gradient de l'erreur E' quadratique mais celle de cet algorithme utilise une fonction d'erreur appelée Li(theta i)
-        #I have to build a vector of zeros where only the updated Q(s,a) will back propagate an error
-        
         Error = 2*(TDTarget-Qst0_at0)     
         self.agentQNetwork.updateModelParameters(Error,chosenAction)
         
@@ -163,11 +161,9 @@ class ReinforcementDeepLearningAgent(object):
         #Compute TD Target -> R+Gamma*Qs'a'
         TDTarget = reward + self.gammaDiscount*argmaxQst1_at1
                 
-        #Compute Error -> TDTarget - Qsa
+        #Compute Error -> TDTarget - Qsa (The point of this learning is to minimize the Q(s,a) variation over time in order to reach the true Q(s,a) value)
                 
         #Compute QNetwork Error gradient for the parameter update algorithm /Normalement l'algorithme de back propagation prend le gradient de l'erreur E' quadratique mais celle de cet algorithme utilise une fonction d'erreur appelée Li(theta i)
-        #I have to build a vector of zeros where only the updated Q(s,a) will back propagate an error
-        
         Error = 2*(TDTarget-Qst0_at0)
         self.agentQNetwork.updateModelParameters(Error,chosenAction)
         
