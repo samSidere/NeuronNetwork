@@ -54,4 +54,34 @@ def binary_cross_entropy(y_true, y_pred):
     return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
 
+'''
+Categorical Cross-Entropy 
+The categorical cross-entropy cost function is used for multi-class classification problems. It measures the difference between the predicted and actual values in terms of probabilities. The formula for categorical cross-entropy is:
 
+Categorical Cross-Entropy = - (1/n) * ΣΣ(y(i,j) * log(ŷ(i,j)))
+
+Where:
+
+n is the number of samples in the dataset
+y(i,j) is the actual value of the i-th sample for the j-th class
+ŷ(i,j) is the predicted probability of the i-th sample for the j-th class
+
+'''
+def categorical_cross_entropy (y_true, y_pred):
+    
+    y_true = np.array(y_true,dtype=np.float64)
+    y_pred = np.array(y_pred,dtype=np.float64)
+    
+    result = -np.mean(np.diagonal(np.dot(y_true, np.transpose(np.log(y_pred)))))
+    
+    return result
+
+'''
+    Do Softmax is a function needed to perform categorical cross entropy 
+'''
+def doSoftmax(X):
+    '''
+    Faire la somme totale des proba
+    Générer le vecteur définissant la proba de chaque entrée
+    '''
+    return np.exp(X)/np.sum(np.exp(X))

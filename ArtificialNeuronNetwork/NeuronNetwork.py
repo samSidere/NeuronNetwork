@@ -131,11 +131,9 @@ class NeuronNetwork(object):
     '''
     def computeNetworkPerformance (self, computed_result, expected_results):
         
-        #Compute cost function for each output neuron
-        cost_function_results= []
-        for i in range(0, self.number_of_outputs,1):
-            cost_function_results.append(self.cost_function(expected_results[i], computed_result[i]))
-            print("cost function result for output "+str(i)+" ="+str(cost_function_results[i]))        
+        #Compute cost function for a batch of result #TODO Check if there is an issue in case we have more than one output for other cost function
+        cost_function_results=self.cost_function(expected_results, computed_result)
+        print("cost function result from batch simulation ="+str(cost_function_results))        
         return cost_function_results
    
     '''

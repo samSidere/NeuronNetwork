@@ -99,6 +99,8 @@ class NeuronLayer(object):
         if(self.isInputLayer):
             return
         
+        
+        
         if(outputIndex == None):
             #Do back propagation for current Layer
             for i in range (0,self.layerSize,1):
@@ -107,6 +109,8 @@ class NeuronLayer(object):
                 self.neurons[i].updateParametersFromOutputError( errors[i], correction_coeff)
                 return 
         else :
+            for neuron in self.neurons:
+                neuron.error=0
             self.neurons[outputIndex].updateParametersFromOutputError( errors, correction_coeff)
             return 
             
