@@ -13,39 +13,53 @@ from ExperienceReplayMemory import ExperienceReplayMemory
 if __name__ == '__main__':
     
     #init memory of <s,a,s',r> tuple to train the DQL agent
-    memorySize = 1000
+    memorySize = 100
     experienceReplayMemory =    ExperienceReplayMemory(memorySize)
     batchSize = 32
     
-    myAgent = ReinforcementDeepLearningAgent(7,4,0.2) 
+    myAgent = ReinforcementDeepLearningAgent(6,4,0.2) 
     
-    #Reset environment state
-    #Creation of the environment
-    #game = EnvironmentEmulator() 
-        
-    for epoch in range (0, 1000, 1):
+    counter = 0
+    victory_rate = 0
+    
+    max_epoch = 100
+    max_game_duration = 20
+    
+    TargetNetRefreshrate = 20
+    
+    for epoch in range (0, max_epoch, 1):
         
         #Reset environment state
         #Creation of the environment
-        game = EnvironmentEmulator() 
+        game = EnvironmentEmulator()
+        score = 0
+        number_of_turn=max_game_duration
+        Epsilon = 1/np.sqrt(counter+1)
         
-        Epsilon = 1/np.sqrt(epoch+1)
-                
-        myAgent.gammaDiscount = 0.2
+        if counter%TargetNetRefreshrate==0 :
+            myAgent.updateTargetNetworkParameters()
             
-        for i in range (0, 10, 1):
+        for i in range (0, max_game_duration, 1):
+            
+            counter +=1
                         
             if game.game_in_progress == False :
-                game = EnvironmentEmulator()
-                #break    
+                number_of_turn=i
+                break    
             
             currentState = game.get_environment_state()
             
-            myAgent.refreshAgentActionValueFunctions(currentState)
+            Qsa_vector = myAgent.computeQNetworkActionValueFunctions(currentState)
             
-            chosenAction = myAgent.getSelectedActionFollowingEpsilonGreedyPolicy(Epsilon)
+            chosenAction = myAgent.getSelectedActionFollowingEpsilonGreedyPolicy(Epsilon, Qsa_vector)
             
             game.actions[chosenAction]()
+            
+            #Update kpi
+            score += game.reward
+            if game.reward == 100/1000 : #value for victory
+                victory_rate+=1
+                
             
             resultingState = game.get_environment_state()
             
@@ -53,27 +67,28 @@ if __name__ == '__main__':
                         
             finalStateReached = not game.game_in_progress
             
-            #update parameters based on the latest transition befor experience replay
+            #update parameters based on the latest transition before experience replay
             myAgent.updateQNetworkParametersUsingDoubleDeepQLearning(currentState, chosenAction, reward, resultingState, finalStateReached)
+            
             
             #Experience replay = after taking an action we save <S,S',A,R> into a memory and we perform network training on a batch of saved transitions.           
             #store Transition into Experience replay memory
             experienceReplayMemory.appendTransition(currentState, chosenAction, reward, resultingState, finalStateReached)
             
+            if(counter>memorySize):
+                #Start Training based on a batch of previous Experience
+                #get batch from memory
+                batch = experienceReplayMemory.getRandomBatch(batchSize)
             
-            #Start Training based on a batch of previous Experience
-            #get batch from memory
-            batch = experienceReplayMemory.getRandomBatch(batchSize)
-            
-            #update network parameters for each element of the batch
-            for transition in batch :
-                myAgent.updateQNetworkParametersUsingDoubleDeepQLearning(transition.currentState, transition.chosenAction, transition.reward, transition.resultingState, transition.resultingStateFinal)
+                #update network parameters for each element of the batch
+                for transition in batch :
+                    myAgent.updateQNetworkParametersUsingDoubleDeepQLearning(transition.currentState, transition.chosenAction, transition.reward, transition.resultingState, transition.resultingStateFinal)
+                
+        print("for epoch "+str(epoch)+"score is "+str(score)+" \t in "+str(number_of_turn)+"\t turns and victory rate is "+str(victory_rate/max_epoch))
         
-        
-        myAgent.updateTargetNetworkParameters()
         
     
-    #Reset environment state
+    #Reset environment state for Testing
     #Creation of the environment
     game = EnvironmentEmulator() 
 
@@ -81,11 +96,11 @@ if __name__ == '__main__':
     
     for i in range (0, 2000, 1):
                     
-        myAgent.refreshAgentActionValueFunctions(game.get_environment_state())
+        Qsa_vector = myAgent.computeQNetworkActionValueFunctions(game.get_environment_state())
         
-        print("Q(s,a) of the agent are :"+str(myAgent.agentOutput))
+        print("Q(s,a) of the agent are :"+str(Qsa_vector))
             
-        chosenAction = myAgent.getSelectedActionFollowingGreedyPolicy()
+        chosenAction = myAgent.getSelectedActionFollowingGreedyPolicy(Qsa_vector)
             
         print("Selected action is the number :"+str(chosenAction))
             

@@ -11,11 +11,13 @@ class EnvironmentEmulator(object):
     
     map = None
     
-    goalPosition = [1,0]
+    goalPosition = [2,2]
+    
+    '''
     original_map = np.array([
+            ['+','+'],
+            ['+','+'],
             ['+','V'],
-            ['+','+'],
-            ['+','+'],
             ])
     
     '''
@@ -27,8 +29,8 @@ class EnvironmentEmulator(object):
             ['+','+','+'],
             ])
     
-    
-    original_map = np.array([
+    '''
+        original_map = np.array([
             ['+','+','+','+','+'],
             ['+','+','+','+','+'],
             ['+','+','+','+','V'],
@@ -62,7 +64,6 @@ class EnvironmentEmulator(object):
     previousDistance = None
     distance = None
     reward = None
-    counter = None
     game_in_progress = None
     
     actions = None
@@ -80,7 +81,6 @@ class EnvironmentEmulator(object):
         self.placePositionToken()
         
         self.reward = 0
-        self.counter = 0
         self.computeDistance()
         self.previousDistance = self.distance
         
@@ -101,7 +101,6 @@ class EnvironmentEmulator(object):
     
     def computeCurrentReward(self):
         
-        self.counter += 1       
         reward = self.computeReward(self.position.x,self.position.y)
         
         return reward
@@ -109,7 +108,7 @@ class EnvironmentEmulator(object):
     def computeReward(self, x, y):
         
         if x<0 or y<0 or x>=len(self.map[0]) or y>=len(self.map) :
-            reward=-10
+            reward=-2
         elif self.original_map[y][x]=='B':
             reward =  2
         elif self.original_map[y][x]=='O':
@@ -126,18 +125,17 @@ class EnvironmentEmulator(object):
             '''
             reward = -1
         
-        reward = reward #-self.counter
+        reward = reward
         
-        return reward/100
+        return reward/1000
     
     def computeOutOfBoundReward(self):
         
         outboundReward = -10
         
-        self.counter += 1
-        reward = outboundReward #- self.counter
+        reward = outboundReward
         
-        return reward/100
+        return reward/1000
     
     def placePositionToken(self):
         self.map = np.copy(self.original_map)
@@ -173,7 +171,7 @@ class EnvironmentEmulator(object):
                 
         if self.position.y==0:
             self.reward = self.computeOutOfBoundReward()
-            self.game_in_progress = False
+            #self.game_in_progress = False
             
         else :
             self.position.y = self.position.y-1
@@ -190,7 +188,7 @@ class EnvironmentEmulator(object):
                 
         if self.position.y==len(self.map)-1:
             self.reward = self.computeOutOfBoundReward()
-            self.game_in_progress = False
+            #self.game_in_progress = False
             
         else :
             self.position.y = self.position.y+1
@@ -209,7 +207,7 @@ class EnvironmentEmulator(object):
                 
         if self.position.x==0:
             self.reward = self.computeOutOfBoundReward()
-            self.game_in_progress = False
+            #self.game_in_progress = False
             
         else :
             self.position.x = self.position.x-1
@@ -227,7 +225,7 @@ class EnvironmentEmulator(object):
                 
         if self.position.x==len(self.map[0])-1:
             self.reward = self.computeOutOfBoundReward()
-            self.game_in_progress = False
+            #self.game_in_progress = False
             
         else :
             self.position.x = self.position.x+1
@@ -249,17 +247,15 @@ class EnvironmentEmulator(object):
         x= self.position.x
         y = self.position.y
         
-        #+ = 0
-        #bonus B = 1
-        #Victory V = 2
-        #hole O or offlimit = 3
+        self.computeDistance()
         
         up = self.computeState(x, y-1)
         down = self.computeState(x, y+1)
         left = self.computeState(x-1, y)
         right = self.computeState(x+1, y)
         
-        state = [self.position.x/width, self.position.y/height, self.distance/(height+width),up,down,left,right]
+        #state = [self.position.x/(width), self.position.y/(height), self.distance/((height+width)),up,down,left,right]
+        state = [self.position.x/(10*width), self.position.y/(10*height),up,down,left,right]
         
         return state
     
@@ -276,13 +272,13 @@ class EnvironmentEmulator(object):
         elif self.original_map[y][x]=='B':
             positionType =1
         elif self.original_map[y][x]=='O':
-            positionType =3
+            positionType =4
         elif self.original_map[y][x]=='V':
             positionType =2
         else :
             positionType=0
                 
-        return positionType/3
+        return positionType/40
     
 class Position(object):
     
