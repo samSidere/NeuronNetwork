@@ -5,7 +5,10 @@ Created on 21 août 2024
 '''
 from ArtificialNeuronNetwork.NeuronLayer import NeuronLayer
 from ArtificialNeuronNetwork.Neuron import Neuron
+import ArtificialNeuronNetwork.Cost_functions as Cost_functions
+import ArtificialNeuronNetwork.Activation_functions as Activation_functions
 import numpy as np
+import json
 
 class NeuronNetwork(object):
     
@@ -14,9 +17,9 @@ class NeuronNetwork(object):
     hidden Layers = tableau de couches de neurones cachées
     output Layer = couche de sortie
     '''
-    input_layer=[]
-    hidden_layers=[]
-    output_layer=[]
+    input_layer=None
+    hidden_layers=None
+    output_layer=None
     
     number_of_inputs=None
     number_of_outputs=None
@@ -31,23 +34,26 @@ class NeuronNetwork(object):
     Initialise le réseau de neurone utilisé comme ML model
     '''
     def __init__(self, 
-                 number_of_inputs, 
-                 number_of_outputs, 
-                 network_depth,
-                 neurons_per_hidden_layer,
-                 correction_coeff, 
-                 cost_function, 
-                 input_layer_activation_function, input_layer_der_activation_function,
-                 hidden_layers_activation_function, hidden_layer_der_activation_function,
-                 output_layer_activation_function, output_layer_der_activation_function ):
+                 number_of_inputs=0, 
+                 number_of_outputs=0, 
+                 network_depth=0,
+                 neurons_per_hidden_layer=0,
+                 correction_coeff=1, 
+                 cost_function=Cost_functions.mean_squared_error, 
+                 input_layer_activation_function=Activation_functions.neuronInhibitionFun, input_layer_der_activation_function=Activation_functions.der_neuronInhibitionFun,
+                 hidden_layers_activation_function=Activation_functions.neuronInhibitionFun, hidden_layer_der_activation_function=Activation_functions.der_neuronInhibitionFun,
+                 output_layer_activation_function=Activation_functions.neuronInhibitionFun, output_layer_der_activation_function=Activation_functions.der_neuronInhibitionFun ):
         
         self.number_of_inputs = number_of_inputs
         self.number_of_outputs = number_of_outputs
         self.network_depth = network_depth
         self.neurons_per_hidden_layer = neurons_per_hidden_layer
         
+        
+        
         self.input_layer = NeuronLayer(self.number_of_inputs, 1, input_layer_activation_function, input_layer_der_activation_function, 0, True)
         
+        self.hidden_layers=[]
         
         if self.network_depth==0 or self.neurons_per_hidden_layer == 0:
             self.output_layer = NeuronLayer(self.number_of_outputs, self.number_of_inputs, output_layer_activation_function, output_layer_der_activation_function, 1, False)
@@ -261,10 +267,99 @@ class NeuronNetwork(object):
             #self.input_layer.backPropagationThroughLayer(self.hidden_layers[0], self.correction_coeff)
         return
     
-    '''
-    Charge les paramètres existants TODO
-    '''
-    '''
-    Sauvergarde les paramètres courants TODO
-    '''    
+    def saveNetworkParameterIntofile(self, filename="HyperParameters"):
+        hyperParams = self.getHyperParameters(True)
+        
+        file = open(filename,"w")
+        file.write(hyperParams)
+        file.close()
+    
+    def loadNetworkParameterFromfile(self, filename="HyperParameters"):
+        file = open(filename,"r")
+        self.loadHyperParameters(file.read())
+        file.close()
+    
+    
+    def getHyperParameters(self, directCall=True):
+        
+        if(directCall==True):
+            hyperParams = json.dumps(NetworkHyperParameters(self.input_layer, 
+                                                            self.hidden_layers, 
+                                                            self.output_layer, 
+                                                            self.number_of_inputs,
+                                                            self.number_of_outputs,
+                                                            self.network_depth,
+                                                            self.neurons_per_hidden_layer,
+                                                            self.cost_function.__name__,
+                                                            self.correction_coeff).__dict__)
+        else:
+            hyperParams = NetworkHyperParameters(self.input_layer, 
+                                                            self.hidden_layers, 
+                                                            self.output_layer, 
+                                                            self.number_of_inputs,
+                                                            self.number_of_outputs,
+                                                            self.network_depth,
+                                                            self.neurons_per_hidden_layer,
+                                                            self.cost_function.__name__,
+                                                            self.correction_coeff).__dict__
+        
+        return hyperParams
+    
+    def loadHyperParameters(self, hyperParamsJson):
+        
+        hyperParamsReceiverObject = json.loads(hyperParamsJson)
+        
+        self.number_of_inputs = hyperParamsReceiverObject["number_of_inputs"]
+        self.number_of_outputs = hyperParamsReceiverObject["number_of_outputs"]
+        self.network_depth = hyperParamsReceiverObject["network_depth"]
+        self.neurons_per_hidden_layer = hyperParamsReceiverObject["neurons_per_hidden_layer"]
+        
+        self.cost_function = Cost_functions.getFunctionByName(hyperParamsReceiverObject["cost_function"])
+        self.correction_coeff = hyperParamsReceiverObject["correction_coeff"]
+        
+        self.input_layer = NeuronLayer()
+        self.input_layer.loadHyperParameters(json.dumps(hyperParamsReceiverObject["input_layer"]))
+        
+        self.output_layer = NeuronLayer()
+        self.output_layer.loadHyperParameters(json.dumps(hyperParamsReceiverObject["output_layer"]))
+        
+        if self.network_depth > 0 and self.neurons_per_hidden_layer > 0:
+            for i in range (0,self.network_depth,1):
+                self.hidden_layers.append(NeuronLayer())
+                self.hidden_layers[i].loadHyperParameters(json.dumps(hyperParamsReceiverObject["hidden_layers"][i]))
+               
+        
+    
+class NetworkHyperParameters(object):
+    
+    input_layer=[]
+    hidden_layers=[]
+    output_layer=[]
+    
+    number_of_inputs=None
+    number_of_outputs=None
+    network_depth=None
+    neurons_per_hidden_layer=None
+        
+    cost_function=None
+    correction_coeff=None
+    
+    def __init__(self, input_layer, hidden_layers, output_layer, number_of_inputs,number_of_outputs,network_depth,neurons_per_hidden_layer,cost_function,correction_coeff):
+        
+        self.hidden_layers=[]
+        
+    
+        self.number_of_inputs=number_of_inputs
+        self.number_of_outputs=number_of_outputs
+        self.network_depth=network_depth
+        self.neurons_per_hidden_layer=neurons_per_hidden_layer
+        
+        self.cost_function=cost_function
+        self.correction_coeff=correction_coeff
+        
+        
+        self.input_layer=input_layer.getHyperParameters(directCall=False)
+        self.output_layer=output_layer.getHyperParameters(directCall=False)
+        for layer in hidden_layers :
+            self.hidden_layers.append(layer.getHyperParameters(directCall=False))
             

@@ -6,7 +6,9 @@ Created on 20 août 2024
 
 
 from ArtificialNeuronNetwork.Neuron import Neuron
+import ArtificialNeuronNetwork.Activation_functions as Activation_functions
 import numpy as np
+import json
 
 class NeuronLayer(object):
        
@@ -16,7 +18,7 @@ class NeuronLayer(object):
     neurons = None
     isInputLayer = None
     
-    def __init__(self, layerSize, dendritePerNeuron, activationFunction, der_activationFunction, neurons_bias, isInputLayer):
+    def __init__(self, layerSize=0, dendritePerNeuron=0, activationFunction=Activation_functions.neuronInhibitionFun, der_activationFunction=Activation_functions.der_neuronInhibitionFun, neurons_bias=0, isInputLayer=False):
         self.layerSize = layerSize
         self.dendritePerNeuron = dendritePerNeuron
         self.neurons=[]
@@ -120,5 +122,44 @@ class NeuronLayer(object):
             print(str(neuron.output_value))
         
         return
-
     
+    
+    def getHyperParameters(self, directCall=True):
+        
+        if(directCall==True):
+            hyperParams = json.dumps(LayerHyperParameters(self.layerSize, self.dendritePerNeuron, self.neurons, self.isInputLayer).__dict__)
+        else:
+            hyperParams = LayerHyperParameters(self.layerSize, self.dendritePerNeuron, self.neurons, self.isInputLayer).__dict__
+        
+        return hyperParams
+    
+    def loadHyperParameters(self, hyperParamsJson):
+        
+        hyperParamsReceiverObject = json.loads(hyperParamsJson)
+                
+        self.layerSize = hyperParamsReceiverObject["layerSize"]
+        self.dendritePerNeuron = hyperParamsReceiverObject["dendritePerNeuron"]
+        self.isInputLayer = hyperParamsReceiverObject["isInputLayer"]
+        
+        for i in range (0,self.layerSize,1):
+            self.neurons.append(Neuron())
+            self.neurons[i].loadHyperParameters(json.dumps(hyperParamsReceiverObject["neurons"][i]))
+        
+    
+class LayerHyperParameters(object):
+    
+    layerSize = None
+    dendritePerNeuron = None
+    
+    neurons = None
+    isInputLayer = None
+    
+    def __init__(self, layerSize, dendritePerNeuron, neurons, isInputLayer):
+        self.layerSize = layerSize
+        self.dendritePerNeuron = dendritePerNeuron
+        self.neurons = []
+        self.isInputLayer = isInputLayer
+        
+        for neuron in neurons :
+            self.neurons.append(neuron.getHyperParameters(directCall=False))
+           

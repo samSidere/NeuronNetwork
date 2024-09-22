@@ -6,6 +6,8 @@ Created on 16 août 2024
 import numpy as np
 
 from ArtificialNeuronNetwork import Activation_functions
+import json
+from ArtificialNeuronNetwork.Activation_functions import der_neuronInhibitionFun
 
 class Neuron(object):
     
@@ -24,7 +26,7 @@ class Neuron(object):
     output_value=None
     error=None
     
-    def __init__(self, synaptic_weights, activation_function, der_activation_function, bias):
+    def __init__(self, synaptic_weights=[], activation_function=Activation_functions.neuronInhibitionFun, der_activation_function=der_neuronInhibitionFun, bias=0):
         
         self.synaptic_weights = synaptic_weights
         self.previous_synaptic_weights = synaptic_weights
@@ -136,4 +138,50 @@ class Neuron(object):
         print("I am a neuron with the following parameters \n synaptic weights="+str(self.synaptic_weights)
               +"\n bias="+str(self.bias))
 
+    def getHyperParameters(self, directCall=True):
+        
+        if(directCall==True):
+            hyperParams = json.dumps(NeuronHyperParameters(self.synaptic_weights, self.bias, self.activation_function.__name__, self.der_activation_function.__name__).__dict__)
+        else:
+            hyperParams = NeuronHyperParameters(self.synaptic_weights, self.bias, self.activation_function.__name__, self.der_activation_function.__name__).__dict__
+            
+        return hyperParams
     
+    def loadHyperParameters(self, hyperParamsJson):
+        
+        hyperParamsReceiverObject = json.loads(hyperParamsJson)
+        
+        self.synaptic_weights = hyperParamsReceiverObject["synaptic_weights"]
+        self.previous_synaptic_weights = self.synaptic_weights
+        self.activation_function = Activation_functions.getFunctionByName(hyperParamsReceiverObject["activation_function"])
+        self.der_activation_function = Activation_functions.getFunctionByName(hyperParamsReceiverObject["der_activation_function"])
+        self.bias = hyperParamsReceiverObject["bias"]
+        
+        self.input_values = np.empty(len(self.synaptic_weights), dtype=float)
+        if self.activation_function ==  Activation_functions.softmax :
+            self.output_value = []
+        else :
+            self.output_value = 0
+            
+        self.error = 0
+        
+        
+        
+class NeuronHyperParameters(object):
+    
+    synaptic_weights = None
+    activation_function= None
+    der_activation_function = None
+    
+    bias = None
+    
+    def __init__(self, synaptic_weights, bias, activation_function, der_activation_function):
+        
+        self.synaptic_weights=[]
+        for w in synaptic_weights :
+            self.synaptic_weights.append(w)
+            
+        self.bias = bias
+        self.activation_function = activation_function
+        self.der_activation_function = der_activation_function        
+        

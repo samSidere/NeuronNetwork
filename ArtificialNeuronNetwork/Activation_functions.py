@@ -9,6 +9,30 @@ import numpy as np
 from ArtificialNeuronNetwork import Parameters
 from cmath import nan
 
+
+def getFunctionByName(funcName):
+    
+    functions=[linearActivationFun, der_linearActivationFun,
+               binaryStepFun, der_binaryStepFun,
+               sigmoidLogisticFun, der_sigmoidLogisticFun,
+               tanhFun, der_tanhFun,
+               reLUFun, der_reLUFun,
+               leakyReLUFun, der_leakyReLUFun,
+               parametricReLUFun, der_parametricReLUFun,
+               eLUFun, der_eLUFun,
+               softmax,
+               swish, der_swish,
+               gELU,
+               sELU,
+               neuronInhibitionFun,der_neuronInhibitionFun               
+        ]
+    
+    for function in functions :
+        if funcName == function.__name__ :
+            return function
+    return None
+
+
 '''
 Linear Activation Function
 The linear activation function, also known as "no activation," or "identity function" (multiplied x1.0), is where the activation is proportional to the input.
@@ -148,7 +172,7 @@ __________|----------
 The negative side of the graph makes the gradient value zero. Due to this reason, during the backpropagation process, the weights and biases for some neurons are not updated. This can create dead neurons which never get activated. 
 
 All the negative input values become zero immediately, which decreases the model’s ability to fit or train from the data properly. 
-Note: For building the most reliable ML models, split your data into train, validation, and test sets.
+Note: For building the most reliable ML models, split your data into train, validation, and test_Experience_Replay_Memory sets.
 
 '''
 

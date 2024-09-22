@@ -7,6 +7,18 @@ import numpy as np
 
 from ArtificialNeuronNetwork import Parameters
 
+def getFunctionByName(funcName):
+    
+    functions=[mean_squared_error,
+               binary_cross_entropy,
+               categorical_cross_entropy              
+        ]
+    
+    for function in functions :
+        if funcName == function.__name__ :
+            return function
+    return None
+
 '''
 
 Why Cost Function is Important

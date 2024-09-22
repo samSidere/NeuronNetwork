@@ -41,26 +41,28 @@ if __name__ == '__main__':
     #dummy_result =  [[1,1,1,0],[1,1,1,0]]
     
     
-    MachineLearningModel = NeuronNetwork(2, 1, 2, 12, 0.02,
+    print('Do you want to load an previously created Network?')
+    filename = input("Insert your network parameters file path")
+    
+    if filename =="":
+        MachineLearningModel = NeuronNetwork(2, 1, 2, 12, 0.02,
                                          Cost_functions.binary_cross_entropy, 
                                          Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun, 
                                          Activation_functions.reLUFun, Activation_functions.der_reLUFun,
                                          Activation_functions.sigmoidLogisticFun, Activation_functions.der_sigmoidLogisticFun)
-
-    
-    
-    #input_data = [1/1000,8/1000]
-        
-    #print("input data is "+str(input_data))
-    #MachineLearningModel.executeModel(input_data)
-    
-    #print("output_data layer output is")
-    #MachineLearningModel.output_layer.printLayerOutput()
+    else :
+        MachineLearningModel = NeuronNetwork()
+        MachineLearningModel.loadNetworkParameterFromfile(filename)
     
     for i in range (0, 1000, 1) :
         print("let's test_Experience_Replay_Memory model training")
         MachineLearningModel.supervisedModelTrainingEpochExecution(dummy_input, dummy_result)
     
+    if filename =="":
+        MachineLearningModel.saveNetworkParameterIntofile("E:\\users\\sami\\trash\\dump.json")
+    else :
+        MachineLearningModel.saveNetworkParameterIntofile(filename)
+       
     #'''
     input_data = [16/20,2/20]
     print("input data is "+str(input_data))
@@ -77,11 +79,6 @@ if __name__ == '__main__':
     result = MachineLearningModel.executeModel(input_data)
     print("output data is "+str(result[0].output_value))
     #'''
-    '''
-    input_data = [1,1]
-    print("input data is "+str(input_data))
-    result = MachineLearningModel.executeModel(input_data)
-    print("output data is "+str(result[0].output_value))
-    #'''
+    
 
     pass
