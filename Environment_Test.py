@@ -14,8 +14,6 @@ if __name__ == '__main__':
     
     while game.game_in_progress :
         
-        
-        
         print('current system state is :'+str(game.get_environment_state()))
         command = input("Let us move X ? (u/d/l/r/x)")
         
@@ -32,5 +30,6 @@ if __name__ == '__main__':
             game.move_right()
         
         game.printMap()
+    print('final system state is :'+str(game.get_environment_state()))
         
     pass

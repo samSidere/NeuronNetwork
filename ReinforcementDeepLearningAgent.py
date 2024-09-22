@@ -31,7 +31,7 @@ class ReinforcementDeepLearningAgent(object):
     agentQNetwork = None
     agentTargetNetwork = None
     
-    def __init__(self, stateSize = 1 , actionSetSize = 1, gammaDiscount=0 ):
+    def __init__(self, stateSize = 1 , actionSetSize = 1, gammaDiscount=0, filename=None ):
         
         self.stateSize = stateSize
         self.actionSetSize = actionSetSize
@@ -40,12 +40,17 @@ class ReinforcementDeepLearningAgent(object):
         
         #Q network is the neural network at the center of the agent. It will compute action value functions in order to drive agent decisions
         #In this environment, it consists in one neuron network in charge of computing each Q(s,a) action pair output
-        
-        self.agentQNetwork = NeuronNetwork(self.stateSize, self.actionSetSize, 2, 12, 0.01,
+        if filename==None :
+            self.agentQNetwork = NeuronNetwork(self.stateSize, self.actionSetSize, 2, 12, 0.01,
                                              Cost_functions.mean_squared_error, 
                                              Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun, 
                                              Activation_functions.reLUFun, Activation_functions.der_reLUFun,
                                              Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun)
+        else :
+            self.agentQNetwork = NeuronNetwork()
+            self.agentQNetwork.loadNetworkParameterFromfile(filename)
+            self.stateSize = self.agentQNetwork.number_of_inputs
+            self.actionSetSize = self.agentQNetwork.number_of_outputs
         
         #Target network is in charge of computation of TD target that the network will use for training. It uses a copy of Q Net parameters and is updated every N epochs
         self.agentTargetNetwork = cp.deepcopy(self.agentQNetwork)
@@ -173,4 +178,8 @@ class ReinforcementDeepLearningAgent(object):
     def updateTargetNetworkParameters(self):
         self.agentTargetNetwork = cp.deepcopy(self.agentQNetwork)
             
-    
+    def saveAgentParamtoFile(self, filename):
+        
+        self.agentQNetwork.saveNetworkParameterIntofile(filename)
+        
+        return

@@ -13,19 +13,34 @@ from ExperienceReplayMemory import ExperienceReplayMemory
 if __name__ == '__main__':
     
     #init memory of <s,a,s',r> tuple to train the DQL agent
-    memorySize = 100
+    memorySize = 1000
     experienceReplayMemory =    ExperienceReplayMemory(memorySize)
-    batchSize = 32
+    batchSize = 50
     
-    myAgent = ReinforcementDeepLearningAgent(6,4,0.2) 
+    print('Do you want to load an previously created Agent?')
+    filename = input("Insert your Agent parameters file path")
+    
+    if filename =="":
+        myAgent = ReinforcementDeepLearningAgent(6,4,0.2)
+    else :
+        myAgent = ReinforcementDeepLearningAgent(gammaDiscount=0.2,filename=filename)
+        
+    print('Do you want to change learning rate?')
+    rate = input("Insert learning rate alpha")
+    
+    if rate !="":
+        myAgent.agentQNetwork.correction_coeff = np.float64(rate)
+        myAgent.agentTargetNetwork.correction_coeff = np.float64(rate)
+    
+    #myAgent.gammaDiscount = 0.6
     
     counter = 0
     victory_rate = 0
     
     max_epoch = 100
-    max_game_duration = 20
+    max_game_duration = 50
     
-    TargetNetRefreshrate = 20
+    TargetNetRefreshrate = 50
     
     for epoch in range (0, max_epoch, 1):
         
@@ -87,6 +102,11 @@ if __name__ == '__main__':
         print("for epoch "+str(epoch)+"score is "+str(score)+" \t in "+str(number_of_turn)+"\t turns and victory rate is "+str(victory_rate/max_epoch))
         
         
+    print('Do you want to save this Agent?')
+    filename = input("Insert your Agent parameters file path")
+    
+    if filename !="":
+        myAgent.saveAgentParamtoFile(filename)
     
     #Reset environment state for Testing
     #Creation of the environment

@@ -6,49 +6,50 @@ Created on 4 sept. 2024
 
 import numpy as np
 from pip._vendor.typing_extensions import Self
+import random
 
 class EnvironmentEmulator(object):
     
     map = None
     
-    goalPosition = [2,2]
+    original_map = None
     
     '''
-    original_map = np.array([
+    map_template = np.array([
             ['+','+'],
             ['+','+'],
-            ['+','V'],
+            ['+','+'],
+            ])
+    
+    ''
+    map_template = np.array([
+            ['+','+','+'],
+            ['+','+','+'],
+            ['+','+','+'],
+            ['+','+','+'],
+            ['+','+','+'],
+            ])
+    
+    ''
+    map_template = np.array([
+            ['+','+','+','+','+'],
+            ['+','+','+','+','+'],
+            ['+','+','+','+','+'],
+            ['+','+','+','+','+'],
+            ['+','+','+','+','+'],
+            ])
+    '''
+    map_template = np.array([
+            ['+','+','+','+','+','+','+','+'],
+            ['+','+','+','+','+','+','+','+'],
+            ['+','+','+','+','+','+','+','+'],
+            ['+','+','+','+','+','+','+','+'],
+            ['+','+','+','+','+','+','+','+'],
+            ['+','+','+','+','+','+','+','+'],
+            ['+','+','+','+','+','+','+','+'],
             ])
     
     '''
-    original_map = np.array([
-            ['+','+','+'],
-            ['+','+','+'],
-            ['+','+','V'],
-            ['+','+','+'],
-            ['+','+','+'],
-            ])
-    
-    '''
-        original_map = np.array([
-            ['+','+','+','+','+'],
-            ['+','+','+','+','+'],
-            ['+','+','+','+','V'],
-            ['+','+','+','+','+'],
-            ['+','+','+','+','+'],
-            ])
-    
-    original_map = np.array([
-            ['+','+','+','+','+','+','+','+'],
-            ['+','+','+','+','+','+','+','+'],
-            ['+','+','+','+','+','+','+','+'],
-            ['+','+','+','+','+','+','+','+'],
-            ['+','+','+','+','+','+','+','V'],
-            ['+','+','+','+','+','+','+','+'],
-            ['+','+','+','+','+','+','+','+'],
-            ])
-    
-    
     original_map = np.array([
             ['+','B','+','+','+','B','+','+'],
             ['+','+','B','+','O','O','O','+'],
@@ -61,18 +62,31 @@ class EnvironmentEmulator(object):
     #'''
     
     position = None
-    previousDistance = None
-    distance = None
     reward = None
     game_in_progress = None
     
+    delta_x=None
+    delta_y=None
+    
     actions = None
+    goalPosition = None
      
 
     def __init__(self):
         
-        self.position = Position()
+        self.original_map = np.copy(self.map_template)
+        
+        while True :
+            self.goalPosition=[random.randint(0, len(self.map_template[0])-1),random.randint(0, len(self.map_template)-1)]
+            if self.goalPosition!=[0,0]:
+                break
+            
+        
+        self.original_map[self.goalPosition[1]][self.goalPosition[0]]='V'
+        
         self.map = np.copy(self.original_map)
+        
+        self.position = Position()
         
         self.actions = [self.move_up, self.move_down, self.move_left, self.move_right]
         
@@ -81,11 +95,11 @@ class EnvironmentEmulator(object):
         self.placePositionToken()
         
         self.reward = 0
-        self.computeDistance()
-        self.previousDistance = self.distance
         
-        #self.printMap()
-    
+        
+        self.computeDistance()
+        
+        
     def printPosition(self):
         print('Current Position = x:'+str(self.position.x)+', y:'+str(self.position.y))
         
@@ -96,8 +110,8 @@ class EnvironmentEmulator(object):
         print('Current reward = '+str(self.reward))
     
     def computeDistance(self):
-        self.previousDistance = self.distance
-        self.distance = (abs(self.position.y-self.goalPosition[1])+abs(self.position.x-self.goalPosition[0]))
+        self.delta_x = self.position.x-self.goalPosition[0]
+        self.delta_y = self.position.y-self.goalPosition[1]
     
     def computeCurrentReward(self):
         
@@ -116,13 +130,6 @@ class EnvironmentEmulator(object):
         elif self.original_map[y][x]=='V':
             reward =  100
         else :
-            '''
-            self.computeDistance()
-            if self.previousDistance >= self.distance :
-                reward = +1
-            else :
-                reward = -2
-            '''
             reward = -1
         
         reward = reward
@@ -254,8 +261,7 @@ class EnvironmentEmulator(object):
         left = self.computeState(x-1, y)
         right = self.computeState(x+1, y)
         
-        #state = [self.position.x/(width), self.position.y/(height), self.distance/((height+width)),up,down,left,right]
-        state = [self.position.x/(10*width), self.position.y/(10*height),up,down,left,right]
+        state = [self.delta_x/100, self.delta_y/100,up,down,left,right]
         
         return state
     
