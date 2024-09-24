@@ -13,7 +13,7 @@ import ArtificialNeuronNetwork.Activation_functions as Activation_functions
 import  ArtificialNeuronNetwork.Cost_functions as Cost_functions
 
 
-class ReinforcementDeepLearningAgent(object):
+class DeepQLearningAgent(object):
     '''
         Reinforcement Deep Learning Based agent is a Agent that will learn its parameters Action-Value Functions using ANN
         
@@ -174,6 +174,7 @@ class ReinforcementDeepLearningAgent(object):
         
         
         return
+    
     
     def updateTargetNetworkParameters(self):
         self.agentTargetNetwork = cp.deepcopy(self.agentQNetwork)

@@ -4,7 +4,7 @@ Created on 6 sept. 2024
 @author: SSM9
 '''
 
-from ReinforcementDeepLearningAgent import ReinforcementDeepLearningAgent
+from ReinforcementDeepLearningAgents import DeepQLearningAgent
 from EnvironmentEmulator import EnvironmentEmulator
 
 if __name__ == '__main__':
@@ -15,7 +15,7 @@ if __name__ == '__main__':
     if filename =="":
         pass
     else :
-        myAgent = ReinforcementDeepLearningAgent(filename=filename)
+        myAgent = DeepQLearningAgent(filename=filename)
     
        
     counter = 0

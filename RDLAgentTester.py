@@ -6,24 +6,26 @@ Created on 6 sept. 2024
 
 import numpy as np
 
-from ReinforcementDeepLearningAgent import ReinforcementDeepLearningAgent
+from ReinforcementDeepLearningAgents import DeepQLearningAgent
 from EnvironmentEmulator import EnvironmentEmulator
-from ExperienceReplayMemory import ExperienceReplayMemory
+from ReinforcementDeepLearningAgents.ExperienceReplayMemory import ExperienceReplayMemory
+
+
 
 if __name__ == '__main__':
     
     #init memory of <s,a,s',r> tuple to train the DQL agent
-    memorySize = 1000
+    memorySize = 100
     experienceReplayMemory =    ExperienceReplayMemory(memorySize)
-    batchSize = 50
+    batchSize = 32
     
     print('Do you want to load an previously created Agent?')
     filename = input("Insert your Agent parameters file path")
     
     if filename =="":
-        myAgent = ReinforcementDeepLearningAgent(6,4,0.2)
+        myAgent = DeepQLearningAgent(6,4,0.2)
     else :
-        myAgent = ReinforcementDeepLearningAgent(gammaDiscount=0.2,filename=filename)
+        myAgent = DeepQLearningAgent(gammaDiscount=0.3,filename=filename)
         
     print('Do you want to change learning rate?')
     rate = input("Insert learning rate alpha")
@@ -32,15 +34,13 @@ if __name__ == '__main__':
         myAgent.agentQNetwork.correction_coeff = np.float64(rate)
         myAgent.agentTargetNetwork.correction_coeff = np.float64(rate)
     
-    #myAgent.gammaDiscount = 0.6
-    
     counter = 0
     victory_rate = 0
     
-    max_epoch = 100
-    max_game_duration = 50
+    max_epoch = 200
+    max_game_duration = 30
     
-    TargetNetRefreshrate = 50
+    TargetNetRefreshrate = 60
     
     for epoch in range (0, max_epoch, 1):
         

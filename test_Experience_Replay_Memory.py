@@ -5,7 +5,7 @@ Created on 5 sept. 2024
 '''
 
 import numpy as np
-from ExperienceReplayMemory import ExperienceReplayMemory
+from ReinforcementDeepLearningAgents.ExperienceReplayMemory import ExperienceReplayMemory
 
 if __name__ == '__main__':
     
