@@ -4,7 +4,7 @@ Created on 6 sept. 2024
 @author: SSM9
 '''
 
-from ReinforcementDeepLearningAgents import DeepQLearningAgent
+from ReinforcementDeepLearningAgents.DeepQLearningAgent import DeepQLearningAgent
 from EnvironmentEmulator import EnvironmentEmulator
 
 if __name__ == '__main__':

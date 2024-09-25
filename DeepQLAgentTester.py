@@ -6,7 +6,7 @@ Created on 6 sept. 2024
 
 import numpy as np
 
-from ReinforcementDeepLearningAgents import DeepQLearningAgent
+from ReinforcementDeepLearningAgents.DeepQLearningAgent import DeepQLearningAgent
 from EnvironmentEmulator import EnvironmentEmulator
 from ReinforcementDeepLearningAgents.ExperienceReplayMemory import ExperienceReplayMemory
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     if filename =="":
         myAgent = DeepQLearningAgent(6,4,0.2)
     else :
-        myAgent = DeepQLearningAgent(gammaDiscount=0.3,filename=filename)
+        myAgent = DeepQLearningAgent(gammaDiscount=0.1,filename=filename)
         
     print('Do you want to change learning rate?')
     rate = input("Insert learning rate alpha")
@@ -37,10 +37,10 @@ if __name__ == '__main__':
     counter = 0
     victory_rate = 0
     
-    max_epoch = 200
+    max_epoch = 100
     max_game_duration = 30
     
-    TargetNetRefreshrate = 60
+    TargetNetRefreshrate = 30
     
     for epoch in range (0, max_epoch, 1):
         

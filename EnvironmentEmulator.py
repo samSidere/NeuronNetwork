@@ -153,7 +153,7 @@ class EnvironmentEmulator(object):
         elif self.original_map[y][x]=='B':
             reward =  0
         elif self.original_map[y][x]=='O':
-            reward =  -100
+            reward =  -10
         elif self.original_map[y][x]=='V':
             reward =  100
         else :
@@ -175,7 +175,8 @@ class EnvironmentEmulator(object):
         self.map = np.copy(self.original_map)
         self.map[self.position.y][self.position.x]='X'
         
-        if self.original_map[self.position.y][self.position.x]=='V' or self.original_map[self.position.y][self.position.x]=='O':
+        #if self.original_map[self.position.y][self.position.x]=='V' or self.original_map[self.position.y][self.position.x]=='O':
+        if self.original_map[self.position.y][self.position.x]=='V':
             self.game_in_progress = False
     
     def moveToken(self, x = None ,y = None ):
