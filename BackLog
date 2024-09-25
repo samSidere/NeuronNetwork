@@ -1,0 +1,35 @@
+Backlog :
+Revoir code agent -V
+Revoir reward emulator -V
+Revoir code main -V
+
+implement categorical cross entropy loss function -V
++implement loss function -V
++Review code of Cost function-V
+
+implement back propagation d'erreur sur réseaux multi output -V
+wrap batch learning dans l'agent
+refactor code agent pour eviter les duplications de code
+
+implementer save / load hyperparameters-V
+	-Neuron -V
+	-Layer -V
+	-Network -VS
+implementer dropout
+implement layer.add
+implement layer.remove
+implement convolution layer
+implement test 
+-unitary tests
+-integration tests
+implement recurisve network
+implement error handling
+implement out condition
+implement double Q deep learning -V
+Introduction to stochastic policy gradient
+Residual Neuron Network architecture
+Recurrent ANN architecture
+Add more options to Agent creation
+Add the capability to train agent using prexisting transitions (Human teaching)
+Work on dataset preparation
+Work on performance computation
