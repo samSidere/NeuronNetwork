@@ -36,7 +36,7 @@ class Neuron(object):
         
         self.input_values = np.empty(len(self.synaptic_weights), dtype=float)
         if self.activation_function ==  Activation_functions.softmax :
-            self.output_value = []
+            self.output_value = np.empty(len(self.synaptic_weights), dtype=float)
         else :
             self.output_value = 0
             
@@ -75,6 +75,7 @@ class Neuron(object):
         Faire la somme totale des proba
         Générer le vecteur définissant la proba de chaque entrée
         '''
+        '''
         divider = 0
         
         for input_value in self.input_values :
@@ -82,6 +83,8 @@ class Neuron(object):
                         
         for input_value in self.input_values :
             self.output_value.append(np.exp(input_value)/divider)
+        '''
+        self.output_value = np.exp(self.input_values)/np.sum(np.exp(self.input_values))
         
             
     #Compute error from Next Layer TODO : refactor all this capability
