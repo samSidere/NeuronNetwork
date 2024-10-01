@@ -30,7 +30,7 @@ class EnvironmentEmulator(object):
             ['+','+','+'],
             ])
     
-    ''
+    '''
     map_template = np.array([
             ['+','+','+','+','+'],
             ['+','+','+','+','+'],
@@ -46,7 +46,7 @@ class EnvironmentEmulator(object):
             ['+','+','O','+','+'],
             ['+','+','+','+','+'],
             ])
-    '''
+    ''
     map_template = np.array([
             ['+','+','+','+','+','+'],
             ['+','+','+','+','+','+'],
@@ -105,6 +105,7 @@ class EnvironmentEmulator(object):
         
         while True :
             self.goalPosition=[random.randint(0, len(self.map_template[0])-1),random.randint(0, len(self.map_template)-1)]
+            #self.goalPosition=[4,3]
             if self.goalPosition!=[0,0]:
                 break
             

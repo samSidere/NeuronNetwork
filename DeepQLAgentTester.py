@@ -25,7 +25,7 @@ if __name__ == '__main__':
     if filename =="":
         myAgent = DeepQLearningAgent(6,4,0.2)
     else :
-        myAgent = DeepQLearningAgent(gammaDiscount=0.1,filename=filename)
+        myAgent = DeepQLearningAgent(gammaDiscount=0.2,filename=filename)
         
     print('Do you want to change learning rate?')
     rate = input("Insert learning rate alpha")
@@ -37,12 +37,12 @@ if __name__ == '__main__':
     counter = 0
     victory_rate = 0
     
-    max_epoch = 100
-    max_game_duration = 30
+    max_episodes = 100
+    max_game_duration = 20
     
-    TargetNetRefreshrate = 30
+    TargetNetRefreshrate = 20
     
-    for epoch in range (0, max_epoch, 1):
+    for episode in range (0, max_episodes, 1):
         
         #Reset environment state
         #Creation of the environment
@@ -99,7 +99,7 @@ if __name__ == '__main__':
                 for transition in batch :
                     myAgent.updateQNetworkParametersUsingDoubleDeepQLearning(transition.currentState, transition.chosenAction, transition.reward, transition.resultingState, transition.resultingStateFinal)
                 
-        print("for epoch "+str(epoch)+"score is "+str(score)+" \t in "+str(number_of_turn)+"\t turns and victory rate is "+str(victory_rate/max_epoch))
+        print("for episode "+str(episode)+" : score is "+str(score)+" \t in "+str(number_of_turn)+"\t turns and victory rate is "+str((victory_rate/max_episodes)*100)+'%')
         
         
     print('Do you want to save this Agent?')
