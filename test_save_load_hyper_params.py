@@ -29,7 +29,7 @@ if __name__ == '__main__':
     print("=====================================================Save and Load Tests For Neuron Level===================================================")
     toto = Neuron([0,1,2,3,7],Activation_functions.linearActivationFun,Activation_functions.der_linearActivationFun,66)
         
-    print("toto hyper params are"+toto.getHyperParameters())
+    print("DeepQLAgentTester hyper params are"+toto.getHyperParameters())
     
     tata = Neuron()
     
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     print("=====================================================Save and Load Tests For Layer Level===================================================")
     toto = NeuronLayer(10, 2, Activation_functions.sigmoidLogisticFun, Activation_functions.der_sigmoidLogisticFun, 79, False)
         
-    print("toto hyper params are"+toto.getHyperParameters())
+    print("DeepQLAgentTester hyper params are"+toto.getHyperParameters())
     
     tata = NeuronLayer()
     
@@ -78,7 +78,7 @@ if __name__ == '__main__':
                                              Activation_functions.reLUFun, Activation_functions.der_reLUFun,
                                              Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun)
         
-    print("toto hyper params are"+toto.getHyperParameters())
+    print("DeepQLAgentTester hyper params are"+toto.getHyperParameters())
     
     tata = NeuronNetwork()
     
@@ -104,7 +104,7 @@ if __name__ == '__main__':
                                              Activation_functions.reLUFun, Activation_functions.der_reLUFun,
                                              Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun)
     
-    print("toto hyper params are"+toto.getHyperParameters())
+    print("DeepQLAgentTester hyper params are"+toto.getHyperParameters())
     toto.saveNetworkParameterIntofile("E:\\users\\sami\\trash\\dump.json")
     
     tata = NeuronNetwork()

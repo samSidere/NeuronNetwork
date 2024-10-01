@@ -14,11 +14,11 @@ from ArtificialNeuronNetwork.Cost_functions import doSoftmax
 if __name__ == '__main__':
     
     toto = np.array([1,0,0,0])
-    print('toto is '+str(toto))
+    print('DeepQLAgentTester is '+str(toto))
     toto = doSoftmax(toto)
-    print('toto is '+str(toto))
+    print('DeepQLAgentTester is '+str(toto))
     toto = np.sum(toto)
-    print('toto is '+str(toto))
+    print('DeepQLAgentTester is '+str(toto))
     
     #'''
     y_true= [0, 0, 2, 1, 2, 1, 1, 0, 2, 1]
