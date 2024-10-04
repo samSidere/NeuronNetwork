@@ -32,6 +32,9 @@ Introduction to stochastic policy gradient
 Residual Neuron Network architecture
 Recurrent ANN architecture
 Add more options to Agent creation
+-Improve loss function selection
+-Improve parameters persistence
+Add Optimizer selection
 Add the capability to train agent using prexisting transitions (Human teaching)
 Work on dataset preparation
 Work on performance computation
