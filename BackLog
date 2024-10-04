@@ -19,6 +19,8 @@ implementer dropout
 implement layer.add
 implement layer.remove
 implement convolution layer
+implement pooling layer
+implement convolution Neuron Network
 implement test 
 -unitary tests
 -integration tests
@@ -33,3 +35,4 @@ Add more options to Agent creation
 Add the capability to train agent using prexisting transitions (Human teaching)
 Work on dataset preparation
 Work on performance computation
+Implement and refine Loss function selection mechanism for Gradient Descent Algorithm
