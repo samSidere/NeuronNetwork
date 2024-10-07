@@ -55,7 +55,7 @@ if __name__ == '__main__':
         MachineLearningModel.loadNetworkParameterFromfile(filename)
     
     for i in range (0, 1000, 1) :
-        print("let's test_Experience_Replay_Memory model training")
+        print("let's do model training")
         MachineLearningModel.supervisedModelTrainingEpochExecution(dummy_input, dummy_result)
     
     if filename =="":

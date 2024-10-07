@@ -11,7 +11,7 @@ def getFunctionByName(funcName):
     
     functions=[mean_squared_error,
                binary_cross_entropy,
-               categorical_cross_entropy              
+               categorical_cross_entropy             
         ]
     
     for function in functions :
@@ -72,6 +72,8 @@ The categorical cross-entropy cost function is used for multi-class classificati
 
 Categorical Cross-Entropy = - (1/n) * ΣΣ(y(i,j) * log(ŷ(i,j)))
 
+Categorical Cross-Entropy = (1/n) * Σ(categorical-cross-entropy-Loss(y(i), ŷ(i)))
+
 Where:
 
 n is the number of samples in the dataset
@@ -84,16 +86,23 @@ def categorical_cross_entropy (y_true, y_pred):
     y_true = np.array(y_true,dtype=np.float64)
     y_pred = np.array(y_pred,dtype=np.float64)
     
-    result = -np.mean(np.diagonal(np.dot(y_true, np.transpose(np.log(y_pred)))))
+    loss_results = np.zeros(len(y_true))
+    
+    for i in range (0,len(loss_results),1):
+        loss_results[i]=categorical_cross_entropy_Loss(y_true[i], y_pred[i])
+        
+    
+    result = np.mean(loss_results)
     
     return result
 
 '''
-    Do Softmax is a function needed to perform categorical cross entropy 
+    Categorical Cross-Entropy Loss = -Σ(y(i) * log(ŷ(i)))
+    y(i) is the actual value of the for the i-th class
+    ŷ(i) is the predicted probability of the i-th class
 '''
-def doSoftmax(X):
-    '''
-    Faire la somme totale des proba
-    Générer le vecteur définissant la proba de chaque entrée
-    '''
-    return np.exp(X)/np.sum(np.exp(X))
+def categorical_cross_entropy_Loss(y_true, y_pred):
+    y_true = np.array(y_true,dtype=np.float64)
+    y_pred = np.array(y_pred,dtype=np.float64)
+    
+    return -np.sum(y_true*np.log(y_pred))

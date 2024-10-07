@@ -8,6 +8,7 @@ from ArtificialNeuronNetwork.NeuronLayer import NeuronLayer
 from ArtificialNeuronNetwork.NeuronNetwork import NeuronNetwork
 import ArtificialNeuronNetwork.Activation_functions as Activation_functions
 import ArtificialNeuronNetwork.Cost_functions as Cost_functions
+from ArtificialNeuronNetwork.Neuron import Optimizer
 
 def my_function():
     pass
@@ -27,7 +28,11 @@ if __name__ == '__main__':
     print(MyClass.method.__qualname__)  # gives "MyClass.method"
     
     print("=====================================================Save and Load Tests For Neuron Level===================================================")
-    toto = Neuron([0,1,2,3,7],Activation_functions.linearActivationFun,Activation_functions.der_linearActivationFun,66)
+    toto = Neuron([0,1,2,3,7],
+                  Activation_functions.linearActivationFun,Activation_functions.der_linearActivationFun,
+                  66,
+                  Optimizer.MOMENTUM,
+                  0.3)
         
     print("DeepQLAgentTester hyper params are"+toto.getHyperParameters())
     
@@ -49,7 +54,7 @@ if __name__ == '__main__':
         print("Neuron save and load test was a failure")
     
     print("=====================================================Save and Load Tests For Layer Level===================================================")
-    toto = NeuronLayer(10, 2, Activation_functions.sigmoidLogisticFun, Activation_functions.der_sigmoidLogisticFun, 79, False)
+    toto = NeuronLayer(10, 2, Activation_functions.sigmoidLogisticFun, Activation_functions.der_sigmoidLogisticFun, 79, False, Optimizer.MOMENTUM, 0.3)
         
     print("DeepQLAgentTester hyper params are"+toto.getHyperParameters())
     
@@ -76,7 +81,9 @@ if __name__ == '__main__':
                                              Cost_functions.mean_squared_error, 
                                              Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun, 
                                              Activation_functions.reLUFun, Activation_functions.der_reLUFun,
-                                             Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun)
+                                             Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun,
+                                             True,
+                                             Optimizer.MOMENTUM, 0.3)
         
     print("DeepQLAgentTester hyper params are"+toto.getHyperParameters())
     
@@ -93,16 +100,18 @@ if __name__ == '__main__':
     print()
     
     if(tata.getHyperParameters()==toto.getHyperParameters()):
-        print("NeuronLayer save and load test was a success")
+        print("NeuronNetwork save and load test was a success")
     else :
-        print("NeuronLayer save and load test was a failure")
+        print("NeuronNetwork save and load test was a failure")
     
     print("=====================================================Save and Load Tests For Network Level Using a file===================================================")
     toto = NeuronNetwork(5, 2, 2, 12, 0.01,
                                              Cost_functions.mean_squared_error, 
                                              Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun, 
                                              Activation_functions.reLUFun, Activation_functions.der_reLUFun,
-                                             Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun)
+                                             Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun,
+                                             True,
+                                             Optimizer.MOMENTUM, 0.3)
     
     print("DeepQLAgentTester hyper params are"+toto.getHyperParameters())
     toto.saveNetworkParameterIntofile("E:\\users\\sami\\trash\\dump.json")
@@ -119,8 +128,8 @@ if __name__ == '__main__':
     print()
     
     if(tata.getHyperParameters()==toto.getHyperParameters()):
-        print("NeuronLayer save and load test was a success")
+        print("NeuronNetwork from file save and load test was a success")
     else :
-        print("NeuronLayer save and load test was a failure")
+        print("NeuronNetwork from file save and load test was a failure")
     
     pass

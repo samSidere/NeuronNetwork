@@ -18,7 +18,14 @@ class NeuronLayer(object):
     neurons = None
     isInputLayer = None
     
-    def __init__(self, layerSize=0, dendritePerNeuron=0, activationFunction=Activation_functions.neuronInhibitionFun, der_activationFunction=Activation_functions.der_neuronInhibitionFun, neurons_bias=0, isInputLayer=False):
+    def __init__(self, layerSize=0, 
+                 dendritePerNeuron=0, 
+                 activationFunction=Activation_functions.neuronInhibitionFun, 
+                 der_activationFunction=Activation_functions.der_neuronInhibitionFun, 
+                 neurons_bias=0, 
+                 isInputLayer=False,
+                 optimizer=None,
+                 gamma = 0):
         self.layerSize = layerSize
         self.dendritePerNeuron = dendritePerNeuron
         self.neurons=[]
@@ -27,9 +34,9 @@ class NeuronLayer(object):
         for i in range (0,self.layerSize,1):
             if self.isInputLayer:
                 #Input layer weight are always ones and only one input per neuron is allowed
-                self.neurons.append(Neuron(np.ones(1),activationFunction,der_activationFunction,neurons_bias))
+                self.neurons.append(Neuron(np.ones(1),activationFunction,der_activationFunction,neurons_bias,optimizer,gamma))
             else:
-                self.neurons.append(Neuron(np.random.randn(self.dendritePerNeuron),activationFunction,der_activationFunction,neurons_bias))
+                self.neurons.append(Neuron(np.random.randn(self.dendritePerNeuron),activationFunction,der_activationFunction,neurons_bias,optimizer,gamma))
         
     
     def connectLayerToInputData(self,input_data):
@@ -106,7 +113,6 @@ class NeuronLayer(object):
         if(outputIndex == None):
             #Do back propagation for current Layer
             for i in range (0,self.layerSize,1):
-                #TODO build weights table for "previous" layer before their update
                 #update weights and store errors into each neuron of the layer
                 self.neurons[i].updateParametersFromOutputError( errors[i], correction_coeff)
                 return 
