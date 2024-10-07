@@ -39,3 +39,4 @@ Add the capability to train agent using prexisting transitions (Human teaching)
 Work on dataset preparation
 Work on performance computation
 Implement and refine Loss function selection mechanism for Gradient Descent Algorithm -V
+Implement batch training using Cost function value
