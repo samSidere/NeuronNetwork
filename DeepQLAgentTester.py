@@ -23,7 +23,7 @@ if __name__ == '__main__':
     filename = input("Insert your Agent parameters file path")
     
     if filename =="":
-        myAgent = DeepQLearningAgent(6,4,0.2)
+        myAgent = DeepQLearningAgent(6,4,0.1)
     else :
         myAgent = DeepQLearningAgent(gammaDiscount=0.2,filename=filename)
         

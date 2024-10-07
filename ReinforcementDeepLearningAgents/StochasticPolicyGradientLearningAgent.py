@@ -32,7 +32,7 @@ class StochasticPolicyGradientLearningAgent(object):
         #Policy Network is the neural network at the center of the agent. It will compute stochastic policy P(a|st) in order to drive agent decisions
         #In this environment, it consists in one neuron network in charge of computing each P(a|st) output
         if filename==None :
-            self.agentPolicyNetwork = NeuronNetwork(self.stateSize, self.actionSetSize, 2, 12, 0.01,
+            self.agentPolicyNetwork = NeuronNetwork(self.stateSize, self.actionSetSize, 2, 12, 0.001,
                                              Cost_functions.categorical_cross_entropy, 
                                              Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun, 
                                              Activation_functions.reLUFun, Activation_functions.der_reLUFun,
@@ -90,9 +90,9 @@ class StochasticPolicyGradientLearningAgent(object):
         #update NetworkParametersBased J(Θ) Gradient Ascend Method
         #
         # Trick has to be put in place in order to push error through network
-        # We will hack the w(t+1)=w(t).-alpha.(ytrue-ypred).-der_activation_fun(sum(wi.xi)).xi formula used to perform gradient descent in order to do the ascent
-        # the  w(t+1) = w(t) -alpha * -der_linear_activation_fun(sum(wi.xi)*xi*(GradJ(Θ)/xi)
-        # => w(t+1) = w(t) -alpha * -1*xi*(GradJ(Θ)/xi)
+        # We will hack the w(t+1)=w(t).-alpha.(ytrue-ypred).der_activation_fun(sum(wi.xi)).xi formula used to perform gradient descent in order to do the ascent
+        # the  w(t+1) = w(t) -alpha * der_linear_activation_fun(sum(wi.xi)*xi*(GradJ(Θ)/xi)
+        # => w(t+1) = w(t) -alpha *xi*-(GradJ(Θ)/xi)
         # => w(t+1) = w(t) +alpha*xi*(GradJ(Θ)/xi)
         '''
         
@@ -129,7 +129,7 @@ class StochasticPolicyGradientLearningAgent(object):
             Sj=Si.transpose()
             
             #Compute JacobianMatrix of the policyResult(t) that we will use to update Θ at this step
-            gradJΘt=(Si*(δij-Sj))*gradJΘCommonFactors
+            gradJΘt=(Si*(δij-Sj))*-gradJΘCommonFactors
             #We want to pass the partial derivatives of the function per class
             gradJΘt=gradJΘt.transpose()
                         

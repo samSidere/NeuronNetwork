@@ -18,9 +18,9 @@ if __name__ == '__main__':
     filename = input("Insert your Agent parameters file path")
     
     if filename =="":
-        myAgent = StochasticPolicyGradientLearningAgent(6,4,0.6)
+        myAgent = StochasticPolicyGradientLearningAgent(6,4,0.1)
     else :
-        myAgent = StochasticPolicyGradientLearningAgent(gammaDiscount=0.6,filename=filename)
+        myAgent = StochasticPolicyGradientLearningAgent(gammaDiscount=0.1,filename=filename)
         
     print('Do you want to change learning rate?')
     rate = input("Insert learning rate alpha")
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     counter = 0
     victory_rate = 0
     
-    max_episodes = 1000
+    max_episodes = 100
     max_game_duration = 20
     
     

@@ -41,7 +41,7 @@ class DeepQLearningAgent(object):
         #Q network is the neural network at the center of the agent. It will compute action value functions in order to drive agent decisions
         #In this environment, it consists in one neuron network in charge of computing each Q(s,a) action pair output
         if filename==None :
-            self.agentQNetwork = NeuronNetwork(self.stateSize, self.actionSetSize, 2, 12, 0.01,
+            self.agentQNetwork = NeuronNetwork(self.stateSize, self.actionSetSize, 2, 12, 0.005,
                                              Cost_functions.mean_squared_error, 
                                              Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun, 
                                              Activation_functions.reLUFun, Activation_functions.der_reLUFun,
@@ -124,8 +124,8 @@ class DeepQLearningAgent(object):
                 
         #Compute Error -> TDTarget - Qsa  (The point of this learning is to minimize the Q(s,a) variation over time in order to reach the true Q(s,a) value)
                 
-        #Compute QNetwork Error gradient for the parameter update algorithm /Normalement l'algorithme de back propagation prend le gradient de l'erreur E' quadratique mais celle de cet algorithme utilise une fonction d'erreur appelée Li(theta i)
-        Error = 2*(TDTarget-Qst0_at0)     
+        #Compute QNetwork Error gradient for the parameter update algorithm /Normalement l'algorithme de back propagation prend le gradient de l'erreur E' quadratique mais celle de cet algorithme utilise une fonction d'erreur appelée Li(Θi)
+        Error = -2*(TDTarget-Qst0_at0)     
         self.agentQNetwork.updateModelParameters(Error,chosenAction)
         
         
@@ -168,8 +168,8 @@ class DeepQLearningAgent(object):
                 
         #Compute Error -> TDTarget - Qsa (The point of this learning is to minimize the Q(s,a) variation over time in order to reach the true Q(s,a) value)
                 
-        #Compute QNetwork Error gradient for the parameter update algorithm /Normalement l'algorithme de back propagation prend le gradient de l'erreur E' quadratique mais celle de cet algorithme utilise une fonction d'erreur appelée Li(theta i)
-        Error = 2*(TDTarget-Qst0_at0)
+        #Compute QNetwork Error gradient for the parameter update algorithm /Normalement l'algorithme de back propagation prend le gradient de l'erreur E' quadratique mais celle de cet algorithme utilise une fonction d'erreur appelée Li(Θi)
+        Error = -2*(TDTarget-Qst0_at0)
         self.agentQNetwork.updateModelParameters(Error,chosenAction)
         
         
