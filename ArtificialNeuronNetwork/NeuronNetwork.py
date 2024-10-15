@@ -6,6 +6,7 @@ Created on 21 août 2024
 from ArtificialNeuronNetwork.NeuronLayer import NeuronLayer
 import ArtificialNeuronNetwork.Cost_functions as Cost_functions
 import ArtificialNeuronNetwork.Activation_functions as Activation_functions
+from ArtificialNeuronNetwork.Neuron import ErrorFunctionGradient
 import numpy as np
 import json
 
@@ -46,34 +47,46 @@ class NeuronNetwork(object):
                  output_layer_activation_function=Activation_functions.neuronInhibitionFun, output_layer_der_activation_function=Activation_functions.der_neuronInhibitionFun,
                  softmax_output=False,
                  optimizer=None,
-                 gamma=0 ):
+                 beta1=0,
+                 beta2=0):
         
         self.number_of_inputs = number_of_inputs
         self.number_of_outputs = number_of_outputs
         self.network_depth = network_depth
         self.neurons_per_hidden_layer = neurons_per_hidden_layer
+        
+        self.correction_coeff = correction_coeff
+        self.softmax_output = softmax_output
+        
+        self.cost_function = cost_function
+        
+        if(self.cost_function == Cost_functions.mean_squared_error):
+            error_function_gradient = ErrorFunctionGradient.MEAN_SQUARED_ERROR_LOSS
+        elif (self.cost_function == Cost_functions.binary_cross_entropy):
+            error_function_gradient = ErrorFunctionGradient.BINARY_CROSS_ENTROPY_LOSS
+        elif (self.cost_function == Cost_functions.categorical_cross_entropy):
+            error_function_gradient = ErrorFunctionGradient.CATEGORICAL_CROSS_ENTROPY_LOSS
+        else :
+            print('warning Error function is not specified at Neuron Level, make sure the Neuron computation mechanism is correct' )
+            error_function_gradient = ErrorFunctionGradient.MEAN_SQUARED_ERROR_LOSS
                 
-        self.input_layer = NeuronLayer(self.number_of_inputs, 1, input_layer_activation_function, input_layer_der_activation_function, 0, True, optimizer, gamma)
+        self.input_layer = NeuronLayer(self.number_of_inputs, 1, input_layer_activation_function, input_layer_der_activation_function, 0, True, optimizer, beta1, beta2 , error_function_gradient)
         
         self.hidden_layers=[]
         
         if self.network_depth==0 or self.neurons_per_hidden_layer == 0:
-            self.output_layer = NeuronLayer(self.number_of_outputs, self.number_of_inputs, output_layer_activation_function, output_layer_der_activation_function, 1, False, optimizer, gamma)
+            self.output_layer = NeuronLayer(self.number_of_outputs, self.number_of_inputs, output_layer_activation_function, output_layer_der_activation_function, 1, False, optimizer, beta1, beta2 , error_function_gradient)
         elif self.network_depth > 0 and self.neurons_per_hidden_layer > 0:
             
             for i in range (0,self.network_depth,1):
                 if i==0:
-                    self.hidden_layers.append(NeuronLayer(self.neurons_per_hidden_layer, self.number_of_inputs, hidden_layers_activation_function, hidden_layer_der_activation_function, 0, False, optimizer, gamma))
+                    self.hidden_layers.append(NeuronLayer(self.neurons_per_hidden_layer, self.number_of_inputs, hidden_layers_activation_function, hidden_layer_der_activation_function, 0, False, optimizer, beta1, beta2 , error_function_gradient))
                 else:
-                    self.hidden_layers.append(NeuronLayer(self.neurons_per_hidden_layer, self.neurons_per_hidden_layer, hidden_layers_activation_function, hidden_layer_der_activation_function, 0, False, optimizer, gamma))
+                    self.hidden_layers.append(NeuronLayer(self.neurons_per_hidden_layer, self.neurons_per_hidden_layer, hidden_layers_activation_function, hidden_layer_der_activation_function, 0, False, optimizer, beta1, beta2 , error_function_gradient))
             
-            self.output_layer = NeuronLayer(self.number_of_outputs, self.neurons_per_hidden_layer, output_layer_activation_function, output_layer_der_activation_function, 1, False, optimizer, gamma)
+            self.output_layer = NeuronLayer(self.number_of_outputs, self.neurons_per_hidden_layer, output_layer_activation_function, output_layer_der_activation_function, 1, False, optimizer, beta1, beta2 , error_function_gradient)
         else:
             print("wrong value for network depth and/or number of neurons per layer")
-         
-        self.cost_function = cost_function
-        self.correction_coeff = correction_coeff
-        self.softmax_output = softmax_output
         
     '''
     Execute sur une un jeu d'entrées le modèle courant
@@ -133,7 +146,7 @@ class NeuronNetwork(object):
             output_data = self.output_layer.neurons[0].output_value
         
         if self.softmax_output :
-            output_data = doSoftmax(output_data)
+            output_data = doStableSoftmax(output_data)
         
         return output_data
     
@@ -158,7 +171,7 @@ class NeuronNetwork(object):
     def computeErrorUsingLossFunction(self, expected_result, computed_result):
                                 
         if(self.cost_function == Cost_functions.mean_squared_error):
-            return -(expected_result-computed_result)
+            return -2*(expected_result-computed_result)
         
         elif (self.cost_function == Cost_functions.binary_cross_entropy):
             return -(expected_result/computed_result)+(1-expected_result)/(1-computed_result)
@@ -168,14 +181,14 @@ class NeuronNetwork(object):
             return computed_result-expected_result
         
         else:
-            return -(expected_result-computed_result)
+            return -2*(expected_result-computed_result)
         
         
     '''
     Entraine le modèle
     '''
     def supervisedModelTrainingEpochExecution(self, input_data_set, expected_results):
-                
+        
         #Check data consistency
         if len(input_data_set)!= len(expected_results):
             print("Error : input data set("+str(len(input_data_set))+") and expected results ("+str(len(expected_results))+") sizes are different")
@@ -200,68 +213,77 @@ class NeuronNetwork(object):
                 computed_results[i][j]=self.output_layer.neurons[j].output_value
                 
             if self.softmax_output :
-                computed_results[i] = doSoftmax(computed_results[i])
+                computed_results[i] = doStableSoftmax(computed_results[i])
                 errors=self.computeErrorUsingLossFunction(expected_results[i],computed_results[i])
             else:
                 for j in range(0, self.number_of_outputs,1):
                     errors[j]=self.computeErrorUsingLossFunction(expected_results[i][j],computed_results[i][j])
             
             
-            #for j in range(0, self.number_of_outputs,1):
-                #errors[j]=self.computeErrorUsingLossFunction(expected_results[j][i],computed_results[j][i])
-            
             #print("errors :"+str(errors))   
             self.updateModelParameters(errors)
             
         #print("expected results are : "+str(expected_results))
         #print("computed results are : "+str(computed_results))
-        cost_function_results = self.computeCostFunctionResult(expected_results,computed_results)        
-        
+        cost_function_results = self.computeCostFunctionResult(expected_results,computed_results)     
+                
         return cost_function_results
     
     '''
     TODO improve this method
     '''
     def TDB_supervisedModelTrainingByBatchEpochExecution(self, input_data_set, expected_results):
-        '''       
+        
         #Check data consistency
-        if len(input_data_set)!= len(expected_results[0]):
-            print("Error : input data set("+str(len(input_data_set))+") and expected results ("+str(len(expected_results[0]))+") sizes are different")
+        if len(input_data_set)!= len(expected_results):
+            print("Error : input data set("+str(len(input_data_set))+") and expected results ("+str(len(expected_results))+") sizes are different")
             return
-        elif self.number_of_outputs!= len(expected_results):
-            print("Error : number of output ("+str(self.number_of_outputs)+") and expected results size("+str(len(expected_results))+") are different")
+        elif self.number_of_outputs!= len(expected_results[0]):
+            print("Error : number of output ("+str(self.number_of_outputs)+") and expected results size("+str(len(expected_results[0]))+") are different")
             return        
         
         #init computed results table
-        computed_results = np.zeros((self.number_of_outputs,len(input_data_set)))
-                
+        expected_results = np.array(expected_results)
+        computed_results = np.zeros((len(input_data_set),self.number_of_outputs))
+        
+        epoch_errors = np.zeros((len(input_data_set),self.number_of_outputs))
+                        
         #Execute model for each data
         for i in range (0,len(input_data_set),1):
             
-            #errors=np.zeros(self.number_of_outputs)
+            errors=np.zeros(self.number_of_outputs)
                         
             self.executeModel(input_data_set[i])
             
             #Store output values into the computed results table for each output neurons            
             for j in range(0, self.number_of_outputs,1):
-                computed_results[j][i]=self.output_layer.neurons[j].output_value
-             
-        
-        cost_function_results = self.computeCostFunctionResult(expected_results,computed_results)
-        
-        
-        #Update model parameters with back propagation and gradient descent algorithm after each epoch for each output
-        #TODO modify the error computation that need to be done based on the CostFunction instead of the Loss Function
-        for i in range (0, len(input_data_set), 1) :
-            errors=np.zeros(self.number_of_outputs)
+                computed_results[i][j]=self.output_layer.neurons[j].output_value
+                
+            if self.softmax_output :
+                computed_results[i] = doStableSoftmax(computed_results[i])
+                errors=self.computeErrorUsingLossFunction(expected_results[i],computed_results[i])
+            else:
+                for j in range(0, self.number_of_outputs,1):
+                    errors[j]=self.computeErrorUsingLossFunction(expected_results[i][j],computed_results[i][j])
             
-            for j in range(0, self.number_of_outputs,1):
-                errors[j]=self.computeError(expected_results[j][i],computed_results[j][i])
-             
-            self.updateModelParameters(errors)
-        #'''
+            
+            epoch_errors[i] = errors
         
-        return
+        epoch_errors = np.transpose(epoch_errors)
+        
+        errors = np.zeros(self.number_of_outputs)
+                    
+        for i in range(0, self.number_of_outputs, 1):
+            errors[i]=np.sum(epoch_errors[i])           
+              
+        self.updateModelParameters(errors)
+            
+        #print("expected results are : "+str(expected_results))
+        #print("computed results are : "+str(computed_results))
+        cost_function_results = self.computeCostFunctionResult(expected_results,computed_results)        
+        
+        return cost_function_results
+        
     
     '''
     Met à jour jour les paramètres du réseau en propageant les erreurs vers la couche d'entrée
@@ -457,5 +479,12 @@ def doSoftmax(X):
     '''
     Faire la somme totale des proba
     Générer le vecteur définissant la proba de chaque entrée
+    #TODO implement stable version
     '''
     return np.exp(X)/np.sum(np.exp(X))
+
+def doStableSoftmax(X):
+    """Compute the softmax of vector x in a numerically stable way."""
+    shiftx = X - np.max(X)
+    exps = np.exp(shiftx)
+    return exps / np.sum(exps)

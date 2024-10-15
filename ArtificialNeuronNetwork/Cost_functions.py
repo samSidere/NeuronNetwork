@@ -63,7 +63,8 @@ y is the actual value (0 or 1)
 def binary_cross_entropy(y_true, y_pred):
     y_true = np.array(y_true,dtype=np.float64)
     y_pred = np.array(y_pred,dtype=np.float64)
-    return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+    epsilon=1e-8
+    return -np.mean(y_true * np.log(y_pred+epsilon) + (1 - y_true) * np.log(1 - y_pred+epsilon))
 
 
 '''
@@ -105,4 +106,6 @@ def categorical_cross_entropy_Loss(y_true, y_pred):
     y_true = np.array(y_true,dtype=np.float64)
     y_pred = np.array(y_pred,dtype=np.float64)
     
-    return -np.sum(y_true*np.log(y_pred))
+    epsilon=1e-8
+    
+    return -np.sum(y_true*np.log(y_pred+epsilon))

@@ -20,6 +20,7 @@ class Neuron(object):
     previous_synaptic_weights = None #used for backward propagation computation
     activation_function= None
     der_activation_function = None
+    error_function_gradient = None
     
     bias = None
     
@@ -27,8 +28,10 @@ class Neuron(object):
     output_value=None
     error=None
     optimizer = None
-    momentum_param = None
-    gamma = None
+    optimizer_params = None
+    beta1 = None
+    beta2 = None
+    num_steps=None
     
     
     def __init__(self, synaptic_weights=[], 
@@ -36,12 +39,20 @@ class Neuron(object):
                  der_activation_function=der_neuronInhibitionFun, 
                  bias=0, 
                  optimizer = None,
-                 gamma = 0) :
+                 beta1 = 0,
+                 beta2 = 0,
+                 error_function_gradient = None) :
         
         self.synaptic_weights = synaptic_weights
         self.previous_synaptic_weights = synaptic_weights
         self.activation_function = activation_function
         self.der_activation_function = der_activation_function
+        
+        if(error_function_gradient==None):
+            self.error_function_gradient = ErrorFunctionGradient.MEAN_SQUARED_ERROR_LOSS
+        else:
+            self.error_function_gradient = error_function_gradient
+        
         self.bias = bias
         
         self.input_values = np.empty(len(self.synaptic_weights), dtype=float)
@@ -55,8 +66,16 @@ class Neuron(object):
         else:
             self.optimizer = optimizer
         
-        self.momentum_param = 0
-        self.gamma = gamma
+        #depending on the chosen optimizer the param table shape will be different (TBD optimizer params might need to be reset)
+        if(self.optimizer == Optimizer.ADAM):
+            self.optimizer_params = np.zeros((2,len(self.synaptic_weights)+1), dtype=float)
+        else :
+            self.optimizer_params = np.zeros(len(self.synaptic_weights)+1, dtype=float)
+        
+        self.num_steps = 1
+        
+        self.beta1 = beta1
+        self.beta2 = beta2
     
     def processInputs(self):
         '''
@@ -68,25 +87,36 @@ class Neuron(object):
             print('input_vector len ('+str(len(self.input_values))+
                   ') is not compatible with the number of neuron dendrites ('+str(len(self.synaptic_weights))+')')
         else:
-            combination_function_result = self.bias;
-            '''
-            for v,w in zip(self.input_values,self.synaptic_weights):
-                combination_function_result = combination_function_result+np.multiply(v,w)
-            '''
-            combination_function_result+=np.dot(self.input_values,self.synaptic_weights)
+                        
+            combination_function_result = np.dot(self.input_values,self.synaptic_weights)+self.bias
+            
             self.output_value = self.activation_function(combination_function_result)
                    
             
     #Compute error from Next Layer TODO : refactor all this capability
-    def computeErrorFromNextLayer(self, next_layer_weights_associated_to_self,next_layer_errors):
+    def getErrorFromNextLayer(self, next_layer_weights_associated_to_self,next_layer_errors):
         self.error = np.float64(0)
         
         self.error = np.dot(next_layer_weights_associated_to_self,next_layer_errors)
         
         return 
-    
+
+    #Compute error gradient
+    def computeErrorFunctionGradient(self, dendrite_index=None, error=0):
+        
+        if dendrite_index != len(self.synaptic_weights):
+            DJ = error*(self.der_activation_function(np.dot(self.synaptic_weights,self.input_values)
+                                                     +self.bias))*self.input_values[dendrite_index]
+          
+        else:
+            DJ = error*(self.der_activation_function(np.dot(self.synaptic_weights,self.input_values)
+                                                     +self.bias))
+        
+        return DJ
+
     #Refresh parameter using the selected optimizer algorith
-    def getParameterNewValue(self,paramOldValue,correction_coeff,grad_error):
+    #TODO implement other optimizers
+    def getParameterNewValue(self, dendrite_index, paramOldValue,correction_coeff,grad_error):
         
         paramNewValue=0
         
@@ -94,14 +124,44 @@ class Neuron(object):
             paramNewValue = paramOldValue - correction_coeff*grad_error
             
         elif (self.optimizer == Optimizer.MOMENTUM):
-            self.momentum_param = self.gamma*self.momentum_param + correction_coeff*grad_error
-            paramNewValue = paramOldValue - self.momentum_param
+            self.optimizer_params[dendrite_index] = self.beta1*self.optimizer_params[dendrite_index] + correction_coeff*grad_error
+            paramNewValue = paramOldValue - self.optimizer_params[dendrite_index]
             
         elif(self.optimizer == Optimizer.NAG):
             #Nesterov Accelerated Gradient
-            self.momentum_param = self.gamma*self.momentum_param + correction_coeff*grad_error*(paramOldValue-self.gamma*self.momentum_param)
-            paramNewValue = paramOldValue - self.momentum_param
+            '''
+            TDB - Improve NAG implementation based on the official definition of the optimizer
+            Here’s the gradient descent stage:
+            ϕt+1=θt−εt∇f(θt)
             
+            followed by the momentum-like stage:
+            θt+1=ϕt+1+μt(ϕt+1−ϕt)
+            
+            TODO Fix this algorithm implementation
+            
+            '''
+            phi_t_1 = paramOldValue - correction_coeff*grad_error
+            paramNewValue = phi_t_1 + self.beta1*(phi_t_1 - self.optimizer_params[dendrite_index])
+            
+            self.optimizer_params[dendrite_index] = phi_t_1
+        
+        elif(self.optimizer == Optimizer.RMSProp):
+            self.optimizer_params[dendrite_index] = self.beta2*self.optimizer_params[dendrite_index]+(1-self.beta2)*(grad_error)**2
+            paramNewValue = paramOldValue - (correction_coeff/np.sqrt(self.optimizer_params[dendrite_index]+1e-8))*grad_error
+            
+        elif(self.optimizer == Optimizer.ADAM):
+            
+            #Compute momentum
+            self.optimizer_params[0][dendrite_index] = self.beta1*self.optimizer_params[0][dendrite_index] + (1-self.beta1)*grad_error
+            mt_cap = self.optimizer_params[0][dendrite_index]/(1-self.beta1**self.num_steps)
+            
+            
+            #Compute RMS propagation
+            self.optimizer_params[1][dendrite_index] = self.beta2*self.optimizer_params[1][dendrite_index]+(1-self.beta2)*(grad_error)**2
+            vt_cap = self.optimizer_params[1][dendrite_index]/(1-self.beta2**self.num_steps)
+            
+            paramNewValue = paramOldValue - ((correction_coeff*mt_cap)/np.sqrt(vt_cap+1e-8))
+                            
         else:
             paramNewValue = paramOldValue - correction_coeff*grad_error
             
@@ -113,18 +173,9 @@ class Neuron(object):
         #save previous weights before refreshing their value
         self.previous_synaptic_weights = self.synaptic_weights
         
-        self.computeErrorFromNextLayer(next_layer_weights_associated_to_self, next_layer_errors)
+        self.getErrorFromNextLayer(next_layer_weights_associated_to_self, next_layer_errors)
                 
-        #refresh each weight of the neuron using the gradient method
-        for i in range (0, len(self.synaptic_weights),1):
-            
-            grad_err_weight_i = self.error*(self.der_activation_function(np.dot(self.synaptic_weights,self.input_values)+self.bias))*self.input_values[i]
-            
-            self.synaptic_weights[i]=self.getParameterNewValue(self.synaptic_weights[i], correction_coeff, grad_err_weight_i)
-        
-        #refresh bias
-        grad_err_weight_bias = self.error*(self.der_activation_function(np.dot(self.synaptic_weights,self.input_values)+self.bias))
-        self.bias = self.getParameterNewValue(self.bias, correction_coeff, grad_err_weight_bias)
+        self.upateParameters(correction_coeff)
            
         return
     
@@ -135,19 +186,30 @@ class Neuron(object):
         self.previous_synaptic_weights = self.synaptic_weights
         
         self.error = np.float64(error)
-                        
-        #refresh each weight of the neuron using the gradient method
-        for i in range (0, len(self.synaptic_weights),1):
-                        
-            grad_err_weight_i = self.error*(self.der_activation_function(np.dot(self.synaptic_weights,self.input_values)+self.bias))*self.input_values[i]
-            
-            self.synaptic_weights[i]= self.getParameterNewValue(self.synaptic_weights[i], correction_coeff, grad_err_weight_i)
         
-        #refresh bias
-        grad_err_weight_bias = self.error*(self.der_activation_function(np.dot(self.synaptic_weights,self.input_values)+self.bias))
-        self.bias = self.getParameterNewValue(self.bias, correction_coeff, grad_err_weight_bias)
+        self.upateParameters(correction_coeff)
            
         return
+    
+    def upateParameters(self, correction_coeff):
+         
+        #refresh each weight of the neuron using the gradient descent method
+        for i in range (0, len(self.synaptic_weights)+1,1):
+                                    
+            grad_err_param_i = self.computeErrorFunctionGradient(i,self.error)
+            
+            # Index = len(self.synaptic_weights) means we are updating the bias
+            if(i != len(self.synaptic_weights)):
+                #refresh weights
+                self.synaptic_weights[i]= self.getParameterNewValue(i,self.synaptic_weights[i], correction_coeff, grad_err_param_i)
+            else:
+                #refresh bias
+                self.bias = self.getParameterNewValue(i,self.bias, correction_coeff, grad_err_param_i)
+        
+        self.num_steps+=1
+           
+        return
+        
     
     def verbose(self):
         print("I am a neuron with the following parameters \n synaptic weights="+str(self.synaptic_weights)
@@ -161,14 +223,18 @@ class Neuron(object):
                                                            self.activation_function.__name__, 
                                                            self.der_activation_function.__name__,
                                                            self.optimizer.name,
-                                                           self.gamma).__dict__)
+                                                           self.beta1,
+                                                           self.beta2,
+                                                           self.error_function_gradient.name).__dict__)
         else:
             hyperParams = NeuronHyperParameters(self.synaptic_weights, 
                                                 self.bias, 
                                                 self.activation_function.__name__, 
                                                 self.der_activation_function.__name__,
                                                 self.optimizer.name,
-                                                self.gamma).__dict__
+                                                self.beta1,
+                                                self.beta2,
+                                                self.error_function_gradient.name).__dict__
             
         return hyperParams
     
@@ -180,18 +246,25 @@ class Neuron(object):
         self.previous_synaptic_weights = self.synaptic_weights
         self.activation_function = Activation_functions.getFunctionByName(hyperParamsReceiverObject["activation_function"])
         self.der_activation_function = Activation_functions.getFunctionByName(hyperParamsReceiverObject["der_activation_function"])
+        self.error_function_gradient = ErrorFunctionGradient[hyperParamsReceiverObject["error_function_gradient"]]
         self.bias = hyperParamsReceiverObject["bias"]
         self.optimizer = Optimizer[hyperParamsReceiverObject["optimizer"]]
-        self.gamma=hyperParamsReceiverObject["gamma"]
+        self.beta1=hyperParamsReceiverObject["beta1"]
+        self.beta2=hyperParamsReceiverObject["beta2"]
         
         self.input_values = np.empty(len(self.synaptic_weights), dtype=float)
        
         self.output_value = 0
             
         self.error = 0
-        self.momentum_param = 0
         
+        #depending on the chosen optimizer the param table shape will be different
+        if(self.optimizer == Optimizer.ADAM):
+            self.optimizer_params = np.zeros((2,len(self.synaptic_weights)+1), dtype=float)
+        else :
+            self.optimizer_params = np.zeros(len(self.synaptic_weights)+1, dtype=float)
         
+        self.num_steps = 1
         
         
 class NeuronHyperParameters(object):
@@ -200,15 +273,19 @@ class NeuronHyperParameters(object):
     bias = None
     activation_function= None
     der_activation_function = None
+    error_function_gradient = None
     
     optimizer = None
-    gamma = None
+    beta1 = None
+    beta2 = None
         
     def __init__(self, synaptic_weights, 
                  bias, activation_function, 
                  der_activation_function,
                  optimizer,
-                 gamma):
+                 beta1,
+                 beta2,
+                 error_function_gradient):
         
         self.synaptic_weights=[]
         for w in synaptic_weights :
@@ -216,10 +293,11 @@ class NeuronHyperParameters(object):
             
         self.bias = bias
         self.optimizer=optimizer
-        self.gamma=gamma
+        self.beta1=beta1
+        self.beta2=beta2
         self.activation_function = activation_function
         self.der_activation_function = der_activation_function        
-        
+        self.error_function_gradient = error_function_gradient
         
 class Optimizer(Enum):
     SGD = 0,
@@ -229,3 +307,7 @@ class Optimizer(Enum):
     ADAM = 4,
     ADAMW = 5
     
+class ErrorFunctionGradient(Enum):
+    MEAN_SQUARED_ERROR_LOSS = 0,
+    BINARY_CROSS_ENTROPY_LOSS = 1,
+    CATEGORICAL_CROSS_ENTROPY_LOSS = 2

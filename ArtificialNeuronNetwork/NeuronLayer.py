@@ -25,7 +25,9 @@ class NeuronLayer(object):
                  neurons_bias=0, 
                  isInputLayer=False,
                  optimizer=None,
-                 gamma = 0):
+                 beta1 = 0,
+                 beta2 = 0,
+                 error_function_gradient = None):
         self.layerSize = layerSize
         self.dendritePerNeuron = dendritePerNeuron
         self.neurons=[]
@@ -34,9 +36,9 @@ class NeuronLayer(object):
         for i in range (0,self.layerSize,1):
             if self.isInputLayer:
                 #Input layer weight are always ones and only one input per neuron is allowed
-                self.neurons.append(Neuron(np.ones(1),activationFunction,der_activationFunction,neurons_bias,optimizer,gamma))
+                self.neurons.append(Neuron(np.ones(1),activationFunction,der_activationFunction,neurons_bias,optimizer,beta1, beta2,error_function_gradient))
             else:
-                self.neurons.append(Neuron(np.random.randn(self.dendritePerNeuron),activationFunction,der_activationFunction,neurons_bias,optimizer,gamma))
+                self.neurons.append(Neuron(np.random.randn(self.dendritePerNeuron),activationFunction,der_activationFunction,neurons_bias,optimizer, beta1, beta2,error_function_gradient))
         
     
     def connectLayerToInputData(self,input_data):
@@ -121,7 +123,7 @@ class NeuronLayer(object):
                 neuron.error=0
             self.neurons[outputIndex].updateParametersFromOutputError( errors, correction_coeff)
             return 
-            
+        
     def printLayerOutput(self):
         
         for neuron in self.neurons:

@@ -37,12 +37,12 @@ if __name__ == '__main__':
     dummy_result =  [[1],[1],[1],[0],[0],[1],[0],[0],[1],[0],[1],[0],[0]] #droite          
    
     
-    MachineLearningModel = NeuronNetwork(2, 1, 2, 12, 0.001,
+    MachineLearningModel = NeuronNetwork(2, 1, 2, 12, 0.01,
                                          Cost_functions.binary_cross_entropy,
                                          Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun, 
                                          Activation_functions.reLUFun, Activation_functions.der_reLUFun,
                                          Activation_functions.sigmoidLogisticFun, Activation_functions.der_sigmoidLogisticFun,
-                                         False,Optimizer.MOMENTUM, 0.01)
+                                         False,Optimizer.ADAM, 0.9,0.999)
 
     
     
@@ -57,8 +57,9 @@ if __name__ == '__main__':
     for i in range (0, 5000, 1) :
         print("let's do model training")
         performance = MachineLearningModel.supervisedModelTrainingEpochExecution(dummy_input, dummy_result)
+        #performance = MachineLearningModel.TDB_supervisedModelTrainingByBatchEpochExecution(dummy_input, dummy_result)
         
-        if performance < 9.9e-2:
+        if performance < 9.5e-2:
             break
     
     #'''
