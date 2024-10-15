@@ -32,11 +32,10 @@ Introduction to stochastic policy gradient
 Residual Neuron Network architecture
 Recurrent ANN architecture
 Add more options to Agent creation
--Improve loss function selection
+-Improve loss function selection -V
 -Improve parameters persistence - V
-Add Optimizer selection
+Add Optimizer selection -V
 Add the capability to train agent using prexisting transitions (Human teaching)
 Work on dataset preparation
 Work on performance computation
 Implement and refine Loss function selection mechanism for Gradient Descent Algorithm -V
-Implement batch training using Cost function value
