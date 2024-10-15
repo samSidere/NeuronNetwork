@@ -23,17 +23,11 @@ if __name__ == '__main__':
     filename = input("Insert your Agent parameters file path")
     
     if filename =="":
-        myAgent = DeepQLearningAgent(6,4,0.1)
+        myAgent = DeepQLearningAgent(6,4,0.01)
     else :
-        myAgent = DeepQLearningAgent(gammaDiscount=0.2,filename=filename)
+        myAgent = DeepQLearningAgent(gammaDiscount=0.1,filename=filename)
         
-    print('Do you want to change learning rate?')
-    rate = input("Insert learning rate alpha")
-    
-    if rate !="":
-        myAgent.agentQNetwork.correction_coeff = np.float64(rate)
-        myAgent.agentTargetNetwork.correction_coeff = np.float64(rate)
-    
+        
     counter = 0
     victory_rate = 0
     

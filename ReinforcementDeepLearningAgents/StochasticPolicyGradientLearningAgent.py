@@ -12,6 +12,7 @@ from ArtificialNeuronNetwork.NeuronNetwork import NeuronNetwork
 import ArtificialNeuronNetwork.Activation_functions as Activation_functions
 import  ArtificialNeuronNetwork.Cost_functions as Cost_functions
 
+from ArtificialNeuronNetwork.Neuron import Optimizer
 
 class StochasticPolicyGradientLearningAgent(object):
         
@@ -36,7 +37,8 @@ class StochasticPolicyGradientLearningAgent(object):
                                              Cost_functions.categorical_cross_entropy, 
                                              Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun, 
                                              Activation_functions.reLUFun, Activation_functions.der_reLUFun,
-                                             Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun)
+                                             Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun,
+                                             True, Optimizer.ADAM, 0.9, 0.999)
         else :
             self.agentPolicyNetwork = NeuronNetwork()
             self.agentPolicyNetwork.loadNetworkParameterFromfile(filename)
@@ -53,7 +55,10 @@ class StochasticPolicyGradientLearningAgent(object):
         #print('network output before softmax is : '+str(self.agentPolicyNetwork.getNetworkOutput()))
         
         #Use softmax to return probability distribution as output
-        networkOutput = Cost_functions.doSoftmax(self.agentPolicyNetwork.getNetworkOutput())
+        '''
+        TODO modify code to take into account neuron network code evolution and new knowledge
+        '''
+        networkOutput = self.agentPolicyNetwork.getNetworkOutput()
         
         return networkOutput
         

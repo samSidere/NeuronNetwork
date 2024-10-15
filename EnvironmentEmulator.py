@@ -21,7 +21,7 @@ class EnvironmentEmulator(object):
             ['+','+'],
             ])
     
-    '''
+    ''
     map_template = np.array([
             ['+','+','+'],
             ['+','+','+'],
@@ -38,7 +38,7 @@ class EnvironmentEmulator(object):
             ['+','+','+','+','+'],
             ['+','+','+','+','+'],
             ])
-    ''
+    '''
     map_template = np.array([
             ['+','+','+','+','+'],
             ['+','+','O','+','+'],
