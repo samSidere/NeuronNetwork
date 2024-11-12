@@ -43,12 +43,12 @@ class DeepQLearningAgent(object):
         #Q network is the neural network at the center of the agent. It will compute action value functions in order to drive agent decisions
         #In this environment, it consists in one neuron network in charge of computing each Q(s,a) action pair output
         if filename==None :
-            self.agentQNetwork = NeuronNetwork(self.stateSize, self.actionSetSize, 4, 16, 0.1,
+            self.agentQNetwork = NeuronNetwork(self.stateSize, self.actionSetSize, 3, 8, 0.002,
                                              Cost_functions.mean_squared_error, 
                                              Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun, 
                                              Activation_functions.reLUFun, Activation_functions.der_reLUFun,
                                              Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun,
-                                             False, Optimizer.ADAM, 0.9, 0.999)
+                                             False, Optimizer.SGD, 0.9, 0.999)
         else :
             self.agentQNetwork = NeuronNetwork()
             self.agentQNetwork.loadNetworkParameterFromfile(filename)

@@ -19,13 +19,14 @@ if __name__ == '__main__':
     experienceReplayMemory =    ExperienceReplayMemory(memorySize)
     batchSize = 32
     
+    
     print('Do you want to load an previously created Agent?')
     filename = input("Insert your Agent parameters file path")
     
     if filename =="":
-        myAgent = DeepQLearningAgent(6,4,0.01)
+        myAgent = DeepQLearningAgent(6,4,0.3)
     else :
-        myAgent = DeepQLearningAgent(gammaDiscount=0.1,filename=filename)
+        myAgent = DeepQLearningAgent(gammaDiscount=0.01,filename=filename)
         
         
     counter = 0
@@ -34,7 +35,7 @@ if __name__ == '__main__':
     max_episodes = 100
     max_game_duration = 20
     
-    TargetNetRefreshrate = 20
+    TargetNetRefreshrate = 15
     
     for episode in range (0, max_episodes, 1):
         

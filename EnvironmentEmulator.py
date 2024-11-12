@@ -14,23 +14,23 @@ class EnvironmentEmulator(object):
     
     original_map = None
     
-    '''
-    map_template = np.array([
-            ['+','+'],
-            ['+','+'],
-            ['+','+'],
-            ])
-    
     ''
     map_template = np.array([
             ['+','+','+'],
             ['+','+','+'],
             ['+','+','+'],
+            ])
+    
+    '''
+    map_template = np.array([
+            ['+','+','+'],
+            ['+','+','+'],
+            ['+','+','+'],
             ['+','+','+'],
             ['+','+','+'],
             ])
     
-    '''
+    ''
     map_template = np.array([
             ['+','+','+','+','+'],
             ['+','+','+','+','+'],
@@ -38,7 +38,7 @@ class EnvironmentEmulator(object):
             ['+','+','+','+','+'],
             ['+','+','+','+','+'],
             ])
-    '''
+    ''
     map_template = np.array([
             ['+','+','+','+','+'],
             ['+','+','O','+','+'],
