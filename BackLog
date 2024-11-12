@@ -18,12 +18,11 @@ implementer save / load hyperparameters-V
 implementer dropout
 
 implement convolution layer
-	implement layer.add ->CNN
-	implement layer.remove ->CNN
 	implement pooling layer - V
 	implement convolution(Kernel) - V
 	implement save
 	implement load
+	implement back propagation
 implement convolution Neuron Network
 implement test 
 -unitary tests
