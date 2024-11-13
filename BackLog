@@ -41,6 +41,7 @@ Recurrent ANN architecture
 Add more options to Agent creation
 -Improve loss function selection -V
 -Improve parameters persistence - V
+-Add regularization : λ and the type of regularization (L1, L2, or Elastic Net) 
 Add Optimizer selection -V
 Add the capability to train agent using prexisting transitions (Human teaching)
 Work on dataset preparation
