@@ -3,6 +3,10 @@ Revoir code agent -V
 Revoir reward emulator -V
 Revoir code main -V
 
+Add usage of vector Database
+
+Implement a transformer
+
 implement categorical cross entropy loss function -V
 +implement loss function -V
 +Review code of Cost function-V
