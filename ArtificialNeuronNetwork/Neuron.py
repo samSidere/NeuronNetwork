@@ -92,6 +92,18 @@ class Neuron(object):
             
             self.output_value = self.activation_function(combination_function_result)
                    
+    def computeDerivativeOfInput(self):
+        
+        if len(self.input_values)!=len(self.synaptic_weights):
+            print('input_vector len ('+str(len(self.input_values))+
+                  ') is not compatible with the number of neuron dendrites ('+str(len(self.synaptic_weights))+')')
+            
+            return
+        else:
+                        
+            derivative = self.der_activation_function(np.dot(self.input_values,self.synaptic_weights)+self.bias)
+            return derivative
+                   
             
     #Compute error from Next Layer TODO : refactor all this capability
     def getErrorFromNextLayer(self, next_layer_weights_associated_to_self,next_layer_errors):
@@ -167,6 +179,8 @@ class Neuron(object):
             
         return paramNewValue
         
+    
+    
     #Update weights and bias from error computed from next layer TODO : refactor all this TODO : refactor all this capability and infrastructure
     def updateParametersFromNextLayer(self, next_layer_errors, correction_coeff, next_layer_weights_associated_to_self):
         

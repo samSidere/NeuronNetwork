@@ -97,3 +97,42 @@ class ConvolutionLayer(object):
        
         
         return
+    
+    def flattenConvLayerOutput(self):
+        return self.convLayerOutput.flatten()
+    
+    '''
+    TODO : manage max pooling
+    '''
+    def backPropagationThroughLayer(self, nextLayer, correction_coeff):
+        
+        #Build errorMaps for each kernel
+        #Compute error common gradient member for each pixel of each generated feature map
+        #Get slices and rearrange them to build errorMaps
+        #Do backpropagation through each kernel
+         
+        next_layer_errors_associated_to_each_featuremaps_pixel = np.zeros(self.convLayerOutput.size)
+                
+        #get for each pixel of each generated feature map of the current layer a table of weights of the next layer associated to its synaptic connection
+        for i in range (0,np.shape(next_layer_errors_associated_to_each_featuremaps_pixel)[0],1):
+            for j in range (0, nextLayer.layerSize, 1):
+                next_layer_errors_associated_to_each_featuremaps_pixel[i] += nextLayer.neurons[j].previous_synaptic_weights[i]*nextLayer.neurons[j].error
+        
+        #get slices and rearrange them to build errorMaps
+        offset = 0
+        
+        #errorMap init
+        errorMap = np.zeros(self.convLayerOutput.shape)
+        
+        for i in range (0,self.layerSize,1):
+            
+            #extract and reshape slice
+            errorMap[i] = np.reshape(next_layer_errors_associated_to_each_featuremaps_pixel[offset:offset+self.convLayerOutput[i].size],self.convLayerOutput[i].shape)
+            
+            self.kernels.updateParametersFromErrorGrad(errorMap[i],correction_coeff)
+            
+            #update offset for next slice
+            offset += self.convLayerOutput[i].size
+        
+        return 
+    

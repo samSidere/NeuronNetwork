@@ -72,35 +72,34 @@ class NeuronLayer(object):
         
         return 
     
-    #TODO : refactor all this capability and infrastructure
+
     def backPropagationThroughLayer(self, nextLayer, correction_coeff):
         
         if(self.isInputLayer):
             return
         
-        next_layer_errors=[]
-        next_layer_previous_weights_associated_to_each_current_layer_neuron= []
+        next_layer_errors= np.zeros(nextLayer.layerSize)
+        next_layer_previous_weights_associated_to_each_current_layer_neuron= np.zeros((self.layerSize,nextLayer.layerSize))
         
         #get next layer errors and weights associated to each neuron
         for i in range (0, nextLayer.layerSize, 1):
-            next_layer_errors.append(nextLayer.neurons[i].error)
-            
+            next_layer_errors[i]=nextLayer.neurons[i].error
         
         #get for each neuron of the current layer a table of weights of the next layer associated to its synaptic connection
+        '''
+        obsolete part of the code thanks to a refactoring
         for i in range (0, self.layerSize,1):
-            
-            #init the temporary weights table
-            next_layer_previous_weights_associated_to_neuron_i = []
-            
-            #Parse all of the current neurons synaptic connections to get the associated weights
             for j in range (0, nextLayer.layerSize, 1):
-                next_layer_previous_weights_associated_to_neuron_i.append(nextLayer.neurons[j].previous_synaptic_weights[i])
-        
-            next_layer_previous_weights_associated_to_each_current_layer_neuron.append(next_layer_previous_weights_associated_to_neuron_i)
+                next_layer_previous_weights_associated_to_each_current_layer_neuron[i][j]=nextLayer.neurons[j].previous_synaptic_weights[i]
+        '''
             
-        
         #Do back propagation for current Layer
-        for i in range (0,self.layerSize,1):            
+        for i in range (0,self.layerSize,1):
+            
+            #get for each neuron of the current layer a table of weights of the next layer associated to its synaptic connection
+            for j in range (0, nextLayer.layerSize, 1):
+                next_layer_previous_weights_associated_to_each_current_layer_neuron[i][j]=nextLayer.neurons[j].previous_synaptic_weights[i] 
+                           
             #update weights and store errors into each neuron of the layer
             self.neurons[i].updateParametersFromNextLayer(next_layer_errors, correction_coeff, next_layer_previous_weights_associated_to_each_current_layer_neuron[i])
         return 

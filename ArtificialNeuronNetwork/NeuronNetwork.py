@@ -166,6 +166,8 @@ class NeuronNetwork(object):
     '''
     Calcule l'erreur qui sera propagée dans le réseau pour la propagation inverse. Cette erreur correspond à au gradientΘ de la fonction de perte associée au réseau.
     L(Θ)' => Bien entendu ce gradient est celui d'une fonction composée mais les autres facteurs de cette fonctions sont ajoutées lors du calcul de l'erreur dans chaque neurone
+    
+    TODO add a regularization member to the calculation to manage overfitting in a better way than anticipated training stop
     #'''
     
     def computeErrorUsingLossFunction(self, expected_result, computed_result):
