@@ -129,7 +129,7 @@ class ConvolutionLayer(object):
             #extract and reshape slice
             errorMap[i] = np.reshape(next_layer_errors_associated_to_each_featuremaps_pixel[offset:offset+self.convLayerOutput[i].size],self.convLayerOutput[i].shape)
             
-            self.kernels.updateParametersFromErrorGrad(errorMap[i],correction_coeff)
+            self.kernels[i].updateParametersFromErrorGrad(errorMap[i],correction_coeff)
             
             #update offset for next slice
             offset += self.convLayerOutput[i].size

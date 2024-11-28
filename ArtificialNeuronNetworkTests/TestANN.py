@@ -52,7 +52,7 @@ class Test(unittest.TestCase):
             performance = MachineLearningModel.supervisedModelTrainingEpochExecution(dummy_input, dummy_result)
             #performance = MachineLearningModel.TDB_supervisedModelTrainingByBatchEpochExecution(dummy_input, dummy_result)
         
-            if performance < 9.5e-2:
+            if performance < 8.5e-2:
                 break
     
         input_data = [16/20,2/20]

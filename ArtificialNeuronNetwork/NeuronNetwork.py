@@ -206,30 +206,41 @@ class NeuronNetwork(object):
         #Execute model for each data
         for i in range (0,len(input_data_set),1):
             
-            errors=np.zeros(self.number_of_outputs)
-                        
-            self.executeModel(input_data_set[i])
-            
-            #Store output values into the computed results table for each output neurons            
-            for j in range(0, self.number_of_outputs,1):
-                computed_results[i][j]=self.output_layer.neurons[j].output_value
-                
-            if self.softmax_output :
-                computed_results[i] = doStableSoftmax(computed_results[i])
-                errors=self.computeErrorUsingLossFunction(expected_results[i],computed_results[i])
-            else:
-                for j in range(0, self.number_of_outputs,1):
-                    errors[j]=self.computeErrorUsingLossFunction(expected_results[i][j],computed_results[i][j])
-            
-            
-            #print("errors :"+str(errors))   
-            self.updateModelParameters(errors)
+            computed_results[i] = self.trainModelOnOneSample(input_data_set[i], expected_results[i])
             
         #print("expected results are : "+str(expected_results))
         #print("computed results are : "+str(computed_results))
         cost_function_results = self.computeCostFunctionResult(expected_results,computed_results)     
                 
         return cost_function_results
+    
+    '''
+    Entraine le modèle sur 
+    '''
+    def trainModelOnOneSample(self, input_data, expected_result):
+        
+        errors=np.zeros(self.number_of_outputs)
+        
+        computed_result = np.zeros(self.number_of_outputs)
+                        
+        self.executeModel(input_data)
+            
+        #Store output values into the computed results table for each output neurons            
+        for j in range(0, self.number_of_outputs,1):
+            computed_result[j]=self.output_layer.neurons[j].output_value
+                
+        if self.softmax_output :
+            computed_result = doStableSoftmax(computed_result)
+            errors=self.computeErrorUsingLossFunction(expected_result,computed_result)
+        else:
+            for j in range(0, self.number_of_outputs,1):
+                errors[j]=self.computeErrorUsingLossFunction(expected_result[j],computed_result[j])
+            
+            
+        #print("errors :"+str(errors))   
+        self.updateModelParameters(errors)
+        
+        return computed_result
     
     '''
     TODO improve this method
