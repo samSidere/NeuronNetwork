@@ -38,6 +38,10 @@ if __name__ == '__main__':
             img = img.reshape(50,50,1)
             
             input_data_set.append(img)
+            input_data_set.append(img)
+            input_data_set.append(img)
+            expected_results.append(Forme[label]._value_)
+            expected_results.append(Forme[label]._value_)
             expected_results.append(Forme[label]._value_)
     
             # Prints only text file present in My Folder
@@ -48,6 +52,8 @@ if __name__ == '__main__':
     input_data_set = np.array(input_data_set)
     expected_results = np.array(expected_results)
     
+    print(expected_results)
+    
     for i in range (0, 5000, 1) :
         print("let's do model training")
         performance = myCNN.supervisedModelTrainingEpochExecution(input_data_set, expected_results)
@@ -55,15 +61,18 @@ if __name__ == '__main__':
         if performance < 1e-3:
             break
         
-    
-    #test 1
-    result = myCNN.executeModel(input_data_set[0])
-    
-    if result.all() == np.array([1,0]).all():
-        print('carré')
-    else:
-        print('cercle')
-    
+    for i in range (0, len(input_data_set),1):
+        #test i
+        result = myCNN.executeModel(input_data_set[i])
+        print("expected:"+str(expected_results[i])+" computed"+str(result))
+        if(result==Forme.carre.value).all():
+            print(Forme.carre.name)
+        if(result==Forme.cercle.value).all():
+            print(Forme.cercle.name)
+        error = np.mean(abs(expected_results[i]-result))
+        if(error<1e-2):
+            print("test is a success")
+     
     pass
 
 

@@ -69,7 +69,7 @@ class ConvolutionLayer(object):
         return
     
     def processInputs(self, inputData):
-        
+                
         self.convLayerOutput=[]
         
         #Generate feature map associated to each kernel
@@ -96,10 +96,22 @@ class ConvolutionLayer(object):
             
        
         
+                
         return
     
     def flattenConvLayerOutput(self):
-        return self.convLayerOutput.flatten()
+        
+        output=[]
+        
+        for i in range(0,self.layerSize,1):
+            if self.kernelsDimension == 1:
+                output = np.concatenate((output,self.convLayerOutput[:,i].flatten()))
+            elif self.kernelsDimension == 2:
+                output = np.concatenate((output,self.convLayerOutput[:,:,i].flatten()))
+            else:
+                print("dimension not taken in charge")
+                return   
+        return output
     
     '''
     TODO : manage max pooling
@@ -110,7 +122,6 @@ class ConvolutionLayer(object):
         #Compute error common gradient member for each pixel of each generated feature map
         #Get slices and rearrange them to build errorMaps
         #Do backpropagation through each kernel
-         
         next_layer_errors_associated_to_each_featuremaps_pixel = np.zeros(self.convLayerOutput.size)
                 
         #get for each pixel of each generated feature map of the current layer a table of weights of the next layer associated to its synaptic connection
@@ -122,17 +133,19 @@ class ConvolutionLayer(object):
         offset = 0
         
         #errorMap init
-        errorMap = np.zeros(self.convLayerOutput.shape)
-        
+        featureMapShape = self.convLayerOutput.shape[:len(self.convLayerOutput.shape)-1:]
+        errorShape = (self.layerSize,)+featureMapShape
+        errorMap = np.zeros(errorShape)
+                
         for i in range (0,self.layerSize,1):
             
             #extract and reshape slice
-            errorMap[i] = np.reshape(next_layer_errors_associated_to_each_featuremaps_pixel[offset:offset+self.convLayerOutput[i].size],self.convLayerOutput[i].shape)
+            errorMap[i] = np.reshape(next_layer_errors_associated_to_each_featuremaps_pixel[offset:offset+errorMap[i].size],featureMapShape)
             
             self.kernels[i].updateParametersFromErrorGrad(errorMap[i],correction_coeff)
             
             #update offset for next slice
-            offset += self.convLayerOutput[i].size
+            offset += errorMap[i].size
         
         return 
     

@@ -60,7 +60,7 @@ class ConvolutionalNeuronNetwork(object):
                                                   maxPoolingShape = [1,2]
                                                   )
         
-        self.fullyConnectedNetwork = NeuronNetwork(number_of_inputs = featureMapsShape[0]*featureMapsShape[1]*numberOfKernels, 
+        self.fullyConnectedNetwork = NeuronNetwork(number_of_inputs = featureMapsShape[0]*featureMapsShape[1]*numberOfKernels, #Number of inputs shall take into account the size of the output after pooling layer
                                                    number_of_outputs = self.number_of_classes, 
                                                    network_depth = 8, 
                                                    neurons_per_hidden_layer = 8, 

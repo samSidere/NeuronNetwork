@@ -58,9 +58,11 @@ class Test(unittest.TestCase):
         
                 
         #Concatenate manually the feature maps
+        
         result = np.concatenate((myPoolingLayerR.maxPoolingOutput,myPoolingLayerG.maxPoolingOutput), axis=2)
         result = np.concatenate((result,myPoolingLayerB.maxPoolingOutput), axis=2)
         
+        result = np.array(result)
         result = result.astype(np.uint8)
         
         #Create a convolution Layer
