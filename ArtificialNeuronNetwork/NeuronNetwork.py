@@ -42,9 +42,9 @@ class NeuronNetwork(object):
                  neurons_per_hidden_layer=0,
                  correction_coeff=1, 
                  cost_function=Cost_functions.mean_squared_error, 
-                 input_layer_activation_function=Activation_functions.neuronInhibitionFun, input_layer_der_activation_function=Activation_functions.der_neuronInhibitionFun,
-                 hidden_layers_activation_function=Activation_functions.neuronInhibitionFun, hidden_layer_der_activation_function=Activation_functions.der_neuronInhibitionFun,
-                 output_layer_activation_function=Activation_functions.neuronInhibitionFun, output_layer_der_activation_function=Activation_functions.der_neuronInhibitionFun,
+                 input_layer_activation_function=Activation_functions.linearActivationFun, input_layer_der_activation_function=Activation_functions.der_linearActivationFun,
+                 hidden_layers_activation_function=Activation_functions.linearActivationFun, hidden_layer_der_activation_function=Activation_functions.der_linearActivationFun,
+                 output_layer_activation_function=Activation_functions.linearActivationFun, output_layer_der_activation_function=Activation_functions.der_linearActivationFun,
                  softmax_output=False,
                  optimizer=None,
                  beta1=0,
@@ -75,7 +75,7 @@ class NeuronNetwork(object):
         self.hidden_layers=[]
         
         if self.network_depth==0 or self.neurons_per_hidden_layer == 0:
-            self.output_layer = NeuronLayer(self.number_of_outputs, self.number_of_inputs, output_layer_activation_function, output_layer_der_activation_function, 1, False, optimizer, beta1, beta2 , error_function_gradient)
+            self.output_layer = NeuronLayer(self.number_of_outputs, self.number_of_inputs, output_layer_activation_function, output_layer_der_activation_function, 0, False, optimizer, beta1, beta2 , error_function_gradient)
         elif self.network_depth > 0 and self.neurons_per_hidden_layer > 0:
             
             for i in range (0,self.network_depth,1):
@@ -84,7 +84,7 @@ class NeuronNetwork(object):
                 else:
                     self.hidden_layers.append(NeuronLayer(self.neurons_per_hidden_layer, self.neurons_per_hidden_layer, hidden_layers_activation_function, hidden_layer_der_activation_function, 0, False, optimizer, beta1, beta2 , error_function_gradient))
             
-            self.output_layer = NeuronLayer(self.number_of_outputs, self.neurons_per_hidden_layer, output_layer_activation_function, output_layer_der_activation_function, 1, False, optimizer, beta1, beta2 , error_function_gradient)
+            self.output_layer = NeuronLayer(self.number_of_outputs, self.neurons_per_hidden_layer, output_layer_activation_function, output_layer_der_activation_function, 0, False, optimizer, beta1, beta2 , error_function_gradient)
         else:
             print("wrong value for network depth and/or number of neurons per layer")
         
@@ -102,6 +102,21 @@ class NeuronNetwork(object):
         #return model result (output layer neurons)               
         return self.output_layer.neurons
     
+    '''
+    Execute sur plusieurs jeux d'entrées le modèle courant
+    '''
+    def executeModelOnBatch(self, input_data_batch):
+        
+        results=[]
+        
+        for input_data in input_data_batch :
+            self.executeModel(input_data)
+            results.append(self.getNetworkOutput())
+        
+        #return model result (output layer neurons)               
+        return np.array(results)
+    
+   
     '''
     Execute sur une un jeu d'entrées le modèle courant
     ''' 

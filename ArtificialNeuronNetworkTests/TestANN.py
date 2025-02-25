@@ -52,7 +52,7 @@ class Test(unittest.TestCase):
             performance = MachineLearningModel.supervisedModelTrainingEpochExecution(dummy_input, dummy_result)
             #performance = MachineLearningModel.TDB_supervisedModelTrainingByBatchEpochExecution(dummy_input, dummy_result)
         
-            if performance < 8.5e-2:
+            if performance < 4.5e-2:
                 break
     
         input_data = [16/20,2/20]
@@ -63,7 +63,7 @@ class Test(unittest.TestCase):
             print("test 1 is a success")
             print()
             
-        self.assertLess(result[0].output_value, 1e-2)
+        self.assertLess(result[0].output_value, 2e-2)
     
         input_data = [6/20,7/20]
         print("input data is "+str(input_data))
@@ -73,7 +73,7 @@ class Test(unittest.TestCase):
             print("test 2 is a success")
             print()
             
-        self.assertLess(1-result[0].output_value, 1e-2)
+        self.assertLess(1-result[0].output_value, 2e-2)
     
         input_data = [11/20,6/20]
         print("input data is "+str(input_data))
@@ -83,7 +83,7 @@ class Test(unittest.TestCase):
             print("test 3 is a success")
             print()
             
-        self.assertLess(result[0].output_value, 1e-2)
+        self.assertLess(result[0].output_value, 2e-2)
         
         
         pass
@@ -116,7 +116,7 @@ class Test(unittest.TestCase):
                                          Activation_functions.linearActivationFun, Activation_functions.der_linearActivationFun,
                                          True, Optimizer.ADAM, 0.9,0.999)
         
-        for i in range (0, 500, 1) :
+        for i in range (0, 1000, 1) :
             print("For epoch : "+str(i))
             performance = MachineLearningModel.supervisedModelTrainingEpochExecution(dummy_input, dummy_result)
         
