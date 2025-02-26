@@ -7,6 +7,7 @@ Created on 25 févr. 2025
 from ArtificialNeuronNetwork.NeuronNetwork import NeuronNetwork
 from ArtificialNeuronNetwork import Activation_functions
 from ArtificialNeuronNetwork import Cost_functions
+from ArtificialNeuronNetwork.Neuron import Optimizer
 
 from enum import Enum
 
@@ -28,12 +29,19 @@ class EmbeddingLayer(object):
         self.vocabulary_size = vocabulary_size
         self.embedding_depth = embedding_depth
         
-        self.embedding_layer = NeuronNetwork(number_of_inputs= self.vocabulary_size, number_of_outputs= self.embedding_depth)
+        self.embedding_layer = NeuronNetwork(number_of_inputs= self.vocabulary_size, number_of_outputs= self.embedding_depth, correction_coeff = 1e-2,optimizer = Optimizer.ADAM,beta1 = 0.9,beta2 = 0.999)
+        
         
     def __call__(self, input_token_ids):
         
-        my_one_encoded_inputs = np.array([self.one_hot_encoding(token_id) for token_id in input_token_ids])
-        my_embedded_token_IDs = self.embedding_layer.executeModelOnBatch(my_one_encoded_inputs)
+        if input_token_ids.dim == 1 :        
+            my_one_encoded_inputs = np.array([self.one_hot_encoding(token_id) for token_id in input_token_ids])
+            my_embedded_token_IDs = self.embedding_layer.executeModelOnBatch(my_one_encoded_inputs)
+        else :
+            my_embedded_token_IDs=np.zeros((input_token_ids.shape[0],input_token_ids.shape[1],self.embedding_depth))
+            for i in range (0, len(input_token_ids),1):
+                my_one_encoded_inputs = np.array([self.one_hot_encoding(token_id) for token_id in input_token_ids[i]])
+                my_embedded_token_IDs[i]= self.embedding_layer.executeModelOnBatch(my_one_encoded_inputs)
         
         return my_embedded_token_IDs
     
@@ -70,7 +78,7 @@ class PositionEmbeddingLayer(object):
         self.context_size = context_size
         self.embedding_depth = embedding_depth
         
-        self.pos_embedding_layer = NeuronNetwork(number_of_inputs= 1, number_of_outputs= self.embedding_depth)
+        self.pos_embedding_layer = NeuronNetwork(number_of_inputs= 1, number_of_outputs= self.embedding_depth, correction_coeff = 1e-2,optimizer = Optimizer.ADAM,beta1 = 0.9,beta2 = 0.999)
         
         
     def __call__(self, embeddedInputs):
@@ -87,6 +95,7 @@ class PositionEmbeddingLayer(object):
         #Je renvoie mes données d'entrée "embeddées" additionnées avec les infos de positions
         return np.add(embeddedInputs,my_pos_embdeddings)
     
+
 class Pos_embedding_type(Enum):
     RELATIVE = 0,
     ABSOLUTE = 1
