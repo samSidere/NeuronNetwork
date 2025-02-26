@@ -14,7 +14,7 @@ class GPTDatasetV1(Dataset):
     target_ids = None
     
     
-    def __init__(self, txt, tokenizer, max_length, stride):
+    def __init__(self, txt="", tokenizer=tiktoken.get_encoding("gpt2"), max_length=0, stride=0):
         self.input_ids = []
         self.target_ids = []
         token_ids = tokenizer.encode(txt)
@@ -36,6 +36,7 @@ class GPTDataloader_v1(DataLoader):
     dataloader = None
     dataset = None
     tokenizer = None
+    data_iter = None
     
     def __init__(self, txt, batch_size=4, max_length=256, stride=128, shuffle=True, drop_last=True, num_workers=0):
     
@@ -50,8 +51,9 @@ class GPTDataloader_v1(DataLoader):
             drop_last=drop_last,
             num_workers=num_workers
             )
+        
+        self.data_iter = iter(self.dataloader)
     
     def __call__(self):
-        data_iter = iter(self.dataloader)
-        return next(data_iter)
+        return next(self.data_iter)
         

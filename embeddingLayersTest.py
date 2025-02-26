@@ -5,10 +5,6 @@ Created on 25 févr. 2025
 '''
 import torch
 
-from ArtificialNeuronNetwork.NeuronNetwork import NeuronNetwork
-from ArtificialNeuronNetwork import Activation_functions
-from ArtificialNeuronNetwork import Cost_functions
-
 from ArtificialNeuronNetwork.TransformersComponents.EmbeddingLayer import EmbeddingLayer
 from ArtificialNeuronNetwork.TransformersComponents.EmbeddingLayer import PositionEmbeddingLayer
 from ArtificialNeuronNetwork.TransformersComponents.EmbeddingLayer import Pos_embedding_type
@@ -29,8 +25,6 @@ if __name__ == '__main__':
     #Also manage text->tokenIds conversion
     max_length = 4
     my_data_loader = GPTDataloader_v1(raw_text, batch_size=8, max_length=max_length, stride=max_length, shuffle=False)
-    
-    inputs, targets = my_data_loader()
     
     inputs, targets = my_data_loader()
     print("Token IDs:\n", inputs)

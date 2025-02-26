@@ -39,7 +39,7 @@ class EmbeddingLayer(object):
     def __call__(self, input_token_ids):
         
         #CODE : replace execute Neuron network class method by simple lookup table for better performance
-        if input_token_ids.dim == 1 :        
+        if input_token_ids.ndim == 1 :        
             my_embedded_token_IDs = np.array([self.weights[token_id] for token_id in input_token_ids])
         else :
             my_embedded_token_IDs=[]
@@ -49,7 +49,7 @@ class EmbeddingLayer(object):
         '''
         #Code using neuron network class  
                 
-        if input_token_ids.dim == 1 :        
+        if input_token_ids.ndim == 1 :        
             my_one_encoded_inputs = np.array([self.one_hot_encoding(token_id) for token_id in input_token_ids])
             my_embedded_token_IDs = self.embedding_layer.executeModelOnBatch(my_one_encoded_inputs)
         else :
@@ -104,7 +104,7 @@ class PositionEmbeddingLayer(object):
     
     def absolutePosEmbedding(self, embeddedInputs):
         #Je crée mon vecteur de positions absolues "embeddées"
-        my_pos_embdeddings =  self.pos_embedding_layer.executeModelOnBatch(np.resize(np.arange(0,self.context_size,1),(self.context_size,1)))
+        my_pos_embdeddings =  np.resize(self.pos_embedding_layer.executeModelOnBatch(np.resize(np.arange(0,self.context_size,1),(self.context_size,1))),(self.context_size,self.embedding_depth))
         #Je renvoie mes données d'entrée "embeddées" additionnées avec les infos de positions
         return np.add(embeddedInputs,my_pos_embdeddings)
     
