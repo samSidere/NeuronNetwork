@@ -19,7 +19,7 @@ if __name__ == '__main__':
     
     
     vocab_size = 50257
-    output_dim = 50
+    output_dim = 256
     
     #Open document used as data source
     with open("E:\\users\\sami\\trash\\the-verdict.txt", "r", encoding="utf-8") as f:

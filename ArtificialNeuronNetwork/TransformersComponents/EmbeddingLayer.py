@@ -22,6 +22,7 @@ class EmbeddingLayer(object):
     embedding_depth = None
     
     embedding_layer = None
+    weights = None
 
 
     def __init__(self, vocabulary_size=0, embedding_depth=256):
@@ -29,11 +30,25 @@ class EmbeddingLayer(object):
         self.vocabulary_size = vocabulary_size
         self.embedding_depth = embedding_depth
         
-        self.embedding_layer = NeuronNetwork(number_of_inputs= self.vocabulary_size, number_of_outputs= self.embedding_depth, correction_coeff = 1e-2,optimizer = Optimizer.ADAM,beta1 = 0.9,beta2 = 0.999)
+        #CODE : usage of Neuron network class - poor performance compared to simple lookup table
+        #self.embedding_layer = NeuronNetwork(number_of_inputs= self.vocabulary_size, number_of_outputs= self.embedding_depth, correction_coeff = 1e-2,optimizer = Optimizer.ADAM,beta1 = 0.9,beta2 = 0.999)
         
+        #CODE : replace call to neurons to simple matrix instance of shape(self.vocabulary_size,self.embedding_depth)
+        self.weights = np.random.rand(self.vocabulary_size,self.embedding_depth)
         
     def __call__(self, input_token_ids):
         
+        #CODE : replace execute Neuron network class method by simple lookup table for better performance
+        if input_token_ids.dim == 1 :        
+            my_embedded_token_IDs = np.array([self.weights[token_id] for token_id in input_token_ids])
+        else :
+            my_embedded_token_IDs=[]
+            for i in range (0, len(input_token_ids),1):
+                my_embedded_token_IDs.append(np.array([self.weights[token_id] for token_id in input_token_ids[i]]))
+        
+        '''
+        #Code using neuron network class  
+                
         if input_token_ids.dim == 1 :        
             my_one_encoded_inputs = np.array([self.one_hot_encoding(token_id) for token_id in input_token_ids])
             my_embedded_token_IDs = self.embedding_layer.executeModelOnBatch(my_one_encoded_inputs)
@@ -42,8 +57,8 @@ class EmbeddingLayer(object):
             for i in range (0, len(input_token_ids),1):
                 my_one_encoded_inputs = np.array([self.one_hot_encoding(token_id) for token_id in input_token_ids[i]])
                 my_embedded_token_IDs[i]= self.embedding_layer.executeModelOnBatch(my_one_encoded_inputs)
-        
-        return my_embedded_token_IDs
+        '''
+        return np.array(my_embedded_token_IDs)
     
        
     def one_hot_encoding(self, token_id):
@@ -51,8 +66,6 @@ class EmbeddingLayer(object):
         one_encoded_token_id = np.zeros(self.vocabulary_size)
         one_encoded_token_id[token_id]=1
         return one_encoded_token_id
-    
-    
     
     #TODO back propagation   
     
