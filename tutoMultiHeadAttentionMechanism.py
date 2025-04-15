@@ -8,6 +8,7 @@ import torch
 import torch.nn as nn
 from tutoCausalAttentionMechanism import CausalAttention
 
+#Let's move this class to a proper library
 class MultiHeadAttention(nn.Module):
     
     def __init__(self, d_in, d_out,
@@ -122,5 +123,15 @@ if __name__ == '__main__':
     print("context_vecs.shape:", context_vecs.shape)
     
     #Example of multihead optimized using matrix mul
+    torch.manual_seed(123)
+    batch_size, context_length, d_in = batch.shape
+    d_out = 4
+    mha = MultiHeadAttention(d_in, d_out, context_length, 0.0, num_heads=2)
+    context_vecs = mha(batch)
+    print(context_vecs)
+    print("context_vecs.shape:", context_vecs.shape)
+    
+    #Exercize example
+    mha2 = MultiHeadAttention(768, 768, 1024, 0.0, num_heads=12)
     
     pass
